@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# do not start in background!
+
+_emacs-nox()
+{
+    if [ -n "${NOT_IN_TERMCAP}" ]; then
+        TERM=xterm command emacs -nw "$@"
+    else
+        command emacs -nw "$@"
+    fi
+}
+
+_emacs-x()
+{
+    command emacs "$@"
+}
+
+if [ -n "${AVOIDX}" ]; then
+    _emacs-nox "$@"
+elif [ -n "${DISPLAY}" ]; then
+    _emacs-x "$@"
+else
+    command emacs "$@"
+fi
