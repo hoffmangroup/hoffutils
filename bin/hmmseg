@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+java -Xmx512m -jar ~/lib/java/HMMSeg.jar "$@"

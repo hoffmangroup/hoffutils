@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+BINFILENAME=$(which --all R | head -n 2 | tail -n 1)
+
+"${BINFILENAME}" $(echo "$@" | perl -pe 's/ ?--no-readline//g')

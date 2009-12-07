@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# examples:
+# dropoff
+# ~/.pickup/* -> .
+
+# dropoff server
+# server:~/.pickup/* -> .
+
+# dropoff server target
+# server:~/.pickup/* -> target
+
+if [ $1 ]; then
+    scp -r "${1}:~/.pickup/*" "${2:-.}"
+else
+    cp --dereference -prv "~/.pickup/*" .
+fi

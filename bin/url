@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+from __future__ import division
+
+"""
+url: DESCRIPTION
+"""
+
+__version__ = "$Revision$"
+
+# Copyright 2009 Michael M. Hoffman <mmh1@washington.edu>
+
+from os import environ
+import sys
+
+from path import path
+
+PUBLIC_HTML_PATH = path("~/public_html").expand().realpath()
+PUBLIC_HTML_URL = "http://noble.gs.washington.edu/~%s" % environ["LOGNAME"]
+FILE_URL_PREFIX = "file://"
+
+def url(*filenames):
+    for filename in filenames:
+        filepath = path(filename)
+        realpath = filepath.realpath()
+
+        if realpath.startswith(PUBLIC_HTML_PATH):
+            print realpath.replace(PUBLIC_HTML_PATH, PUBLIC_HTML_URL)
+        else:
+            print FILE_URL_PREFIX + realpath
+
+def parse_options(args):
+    from optparse import OptionParser
+
+    usage = "%prog [OPTION]... FILE..."
+    version = "%%prog %s" % __version__
+    parser = OptionParser(usage=usage, version=version)
+
+    options, args = parser.parse_args(args)
+
+    if not len(args) >= 0:
+        parser.print_usage()
+        sys.exit(1)
+
+    return options, args
+
+def main(args=sys.argv[1:]):
+    options, args = parse_options(args)
+
+    return url(*args)
+
+if __name__ == "__main__":
+    sys.exit(main())

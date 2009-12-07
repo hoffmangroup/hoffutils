@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+_TARGETDIR="${TARGETDIR:-${HOME}/.target}"
+
+ln --no-dereference -sfv "${1:-${PWD}}" "${_TARGETDIR}"

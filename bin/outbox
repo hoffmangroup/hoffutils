@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+BASEURL=http://noble.gs.washington.edu/~${USER}
+BASEDIRNAME="$HOME/public_html"
+DIRNAME=$(date +%Y)/outbox/$1
+
+shift
+
+for FILENAME in "$@"; do
+    WHOLEDIRNAME=$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")
+
+    mkdir -p "$WHOLEDIRNAME"
+    cp -r "$FILENAME" "$WHOLEDIRNAME"
+
+    echo "$BASEURL/$DIRNAME/$FILENAME"
+done
+
+chmod a+x "$BASEDIRNAME/$DIRNAME"
+chmod -R a+r "$BASEDIRNAME/$DIRNAME"

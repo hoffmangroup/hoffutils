@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [ "$SGE_TASK_FIRST" != "1" ]; then
+    echo "SGE_TASK_FIRST must be 1" >&2
+    exit
+fi
+
+if [ "$SGE_TASK_STEPSIZE" != "1" ]; then
+    echo "SGE_TASK_STEPSIZE must be 1" >&2
+    exit
+fi
+
+COMMAND=$1
+shift
+ITEMS=("$@")
+NUM_ITEMS=${#ITEMS[@]}
+
+chunk_start() {
+    echo $((($1-1)*NUM_ITEMS/$SGE_TASK_LAST))
+}
+
+START=$(chunk_start $SGE_TASK_ID)
+END=$(chunk_start $((SGE_TASK_ID+1)))
+
+for ((I = START; I < END; I++)); do
+    $COMMAND ${ITEMS[$I]}
+done

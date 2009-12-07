@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+DIRNAME="${1:-.}"
+
+cd "$DIRNAME"
+
+PACKAGE="$(python setup.py --name)"
+VERSION="$(python setup.py --version)"
+PREFIX="$MOD_NOBLESW/$PACKAGE/$VERSION/$MODULES_OS/$MODULES_REL/$MODULES_MACH"
+PYTHON_VERSION=$(python -c "import sys; print sys.version[:3]")
+
+python setup.py install --prefix="$PREFIX" \
+    --install-lib="$PREFIX/lib/python$PYTHON_VERSION" \
+    --install-scripts="$PREFIX/bin" \
+    --single-version-externally-managed --record=/dev/null

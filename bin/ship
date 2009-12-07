@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+## run this after release
+## start in a fresh dist/$NAME-$VERSION directory
+
+NAME="$(python setup.py --name)"
+VERSION="$(python setup.py --version)"
+
+WWWDIR="/nfs/noble/www/htdocs/proj/$NAME"
+if [ ! -d "$WWWDIR" ]; then
+    WWWDIR="$HOME/public_html/software/$NAME"
+fi
+
+SRCDIR="$WWWDIR/src"
+if [ ! -d "$SRCDIR" ]; then
+    SRCDIR="$WWWDIR"
+fi
+
+DOCDIR="$WWWDIR/doc/$VERSION"
+
+# make docs
+pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
+popd
+
+# register and upload software
+# segway is still not public
+if [ "$NAME" == "segway" ]; then
+    python setup.py release
+else
+    python setup.py release register upload
+fi
+
+# copy software
+cp -v "dist/$NAME-$VERSION.tar.gz" "dist/$NAME-$VERSION-py$PYTHON_VERSION.egg" \
+    "$SRCDIR"
+
+# copy docs
+if [ ! -d "$DOCDIR" ]; then
+    rm -r "$DOCDIR"
+fi
+
+mkdir -p "$DOCDIR"
+cp -rv doc/_build/html/* "$DOCDIR"
+cp -v doc/_build/latex/*.pdf "$DOCDIR"
+
+cp -v install.py "$WWWDIR"
