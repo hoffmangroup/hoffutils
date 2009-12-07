@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __future__ import division
+from __future__ import division, with_statement
 
 """
 url: DESCRIPTION
@@ -15,7 +15,8 @@ import sys
 from path import path
 
 PUBLIC_HTML_PATH = path("~/public_html").expand().realpath()
-PUBLIC_HTML_URL = "http://noble.gs.washington.edu/~%s" % environ["LOGNAME"]
+HTTP_HOST_PATH = path("~/.httphost").expand()
+PUBLIC_HTML_URL_TMPL = "http://%s/~%s"
 FILE_URL_PREFIX = "file://"
 
 def url(*filenames):
@@ -24,7 +25,12 @@ def url(*filenames):
         realpath = filepath.realpath()
 
         if realpath.startswith(PUBLIC_HTML_PATH):
-            print realpath.replace(PUBLIC_HTML_PATH, PUBLIC_HTML_URL)
+            # XXX: should fall back to getting hostname
+            with open(HTTP_HOST_PATH) as http_host_file:
+                http_host = http_host_file.readline().strip()
+            public_html_url = PUBLIC_HTML_URL_TMPL % (http_host,
+                                                      environ["LOGNAME"])
+            print realpath.replace(PUBLIC_HTML_PATH, public_html_url)
         else:
             print FILE_URL_PREFIX + realpath
 

@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 
-BASEURL=http://noble.gs.washington.edu/~${USER}
+HTTPHOST="$(cat ~/.httphost 2> /dev/null)"
+
+# default value if there is no ~/.httphost
+HTTPHOST="${HTTPHOST:-$(hostname --long)}"
+
+BASEURL="http://${HTTPHOST}/~${LOGNAME}"
 BASEDIRNAME="$HOME/public_html"
-DIRNAME=$(date +%Y)/outbox/$1
+DIRNAME="$(date +%Y)/outbox/$1"
 
 shift
 
 for FILENAME in "$@"; do
-    WHOLEDIRNAME=$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")
+    WHOLEDIRNAME="$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")"
 
     mkdir -p "$WHOLEDIRNAME"
     cp -r "$FILENAME" "$WHOLEDIRNAME"
