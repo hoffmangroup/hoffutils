@@ -44,3 +44,5 @@ cp -rv doc/_build/html/* "$DOCDIR"
 cp -v doc/_build/latex/*.pdf "$DOCDIR"
 
 cp -v install.py "$WWWDIR"
+
+emacs "$WWWDIR/index.html"

@@ -14,23 +14,33 @@ import sys
 
 from path import path
 
+# XXX: expand().realpath(), duplicative
+# XXX: shouldn't hardcode /nfs/noble, etc.
+URL_TMPLS = {path("~/public_html").expand().realpath():
+                 "http://%s/~" + environ["LOGNAME"],
+             path("/nfs/noble/www/htdocs/").expand().realpath():
+                 "http://%s"}
+
 PUBLIC_HTML_PATH = path("~/public_html").expand().realpath()
 HTTP_HOST_PATH = path("~/.httphost").expand()
 PUBLIC_HTML_URL_TMPL = "http://%s/~%s"
 FILE_URL_PREFIX = "file://"
 
 def url(*filenames):
+    # XXX: should fall back to getting hostname
+    with open(HTTP_HOST_PATH) as http_host_file:
+        http_host = http_host_file.readline().strip()
+
     for filename in filenames:
         filepath = path(filename)
         realpath = filepath.realpath()
 
-        if realpath.startswith(PUBLIC_HTML_PATH):
-            # XXX: should fall back to getting hostname
-            with open(HTTP_HOST_PATH) as http_host_file:
-                http_host = http_host_file.readline().strip()
-            public_html_url = PUBLIC_HTML_URL_TMPL % (http_host,
-                                                      environ["LOGNAME"])
-            print realpath.replace(PUBLIC_HTML_PATH, public_html_url)
+        for url_path, url_tmpl in URL_TMPLS.iteritems():
+            if realpath.startswith(url_path):
+                url = url_tmpl % http_host
+
+                print realpath.replace(url_path, url)
+                break
         else:
             print FILE_URL_PREFIX + realpath
 
