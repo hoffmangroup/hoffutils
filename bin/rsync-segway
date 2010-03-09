@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+rsync -rtvz --exclude output --exclude posterior --exclude viterbi \
+    --exclude observations --exclude "*.observations" --exclude accumulators \
+    $1:${PWD/$HOME/'~'}/ .
