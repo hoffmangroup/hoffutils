@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+if [ ! -d "/cygdrive/F/Gigacow" ]; then
+   echo Please connect the backup storage device.
+   read X
+fi
