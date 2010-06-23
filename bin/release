@@ -9,7 +9,6 @@ MODDIR="/net/noble/vol1/software/modules/${NAME}"
 perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$VERSION\"/" \
     install.py install.tmpl
 
-
 svn commit
 svn cp . "$REPO/tags/release-$VERSION" -m "tagging release $VERSION"
 

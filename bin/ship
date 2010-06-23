@@ -30,8 +30,10 @@ else
     python setup.py release register upload
 fi
 
+### XXX: everything from here on must change for install at EBI
+
 # copy software
-cp -v "dist/$NAME-$VERSION.tar.gz" "dist/$NAME-$VERSION-py$PYTHON_VERSION.egg" \
+cp -v "dist/$NAME-$VERSION.tar.gz" "dist/$NAME-$VERSION-py$PYTHON_VERSION"*.egg \
     "$SRCDIR"
 
 # copy docs
