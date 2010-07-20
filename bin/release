@@ -42,7 +42,6 @@ pushd "${NAME}-${VERSION}"
 
 install-python-module "$PWD"
 ssh n001 install-python-module "$PWD"
-ssh sage install-python-module "$PWD"
 
 # setup module file
 OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
