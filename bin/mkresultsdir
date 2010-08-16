@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+FILENAME=runall
+DESCRIPTION="$1"
+YEAR="$(date +%Y)"
+MONTH="$(date +%m)"
+DAY="$(date +%d)"
+DIRNAME="$YEAR/$MONTH$DAY-$DESCRIPTION"
+SHORTCUTDIRNAME="$HOME/results/$YEAR/$MONTH"
+
+shift
+
+mkdir -p "$DIRNAME"
+cd "$DIRNAME"
+
+if [ -e "$FILENAME" ]; then
+    echo "$FILENAME already exists" >&2
+else
+    cat > "$FILENAME" << EOF
+#!/usr/bin/env bash
+
+command cd -P .
+exec runall-wrapper $@
+EOF
+fi
+
+chmod a+rx "$FILENAME"
+
+echo "cd \"$DIRNAME\""
+
+# create a shortcut in a central location
+mkdir -p "$SHORTCUTDIRNAME"
+ln -s "$DIRNAME" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
+
+# XXX: automatically creating an entry for the notebook might be helpful

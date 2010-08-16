@@ -10,15 +10,14 @@ __version__ = "$Revision$"
 # Copyright 2009 Michael M. Hoffman <mmh1@washington.edu>
 
 from os import environ
+from pwd import getpwall
 import sys
 
 from path import path
 
 # XXX: expand().realpath(), duplicative
 # XXX: shouldn't hardcode /nfs/noble, etc.
-URL_TMPLS = {path("~/public_html").expand().realpath():
-                 "http://%s/~" + environ["LOGNAME"],
-             path("/nfs/noble/www/htdocs/").expand().realpath():
+URL_TMPLS = {path("/nfs/noble/www/htdocs/").expand().realpath():
                  "http://%s"}
 
 PUBLIC_HTML_PATH = path("~/public_html").expand().realpath()
@@ -26,16 +25,28 @@ HTTP_HOST_PATH = path("~/.httphost").expand()
 PUBLIC_HTML_URL_TMPL = "http://%s/~%s"
 FILE_URL_PREFIX = "file://"
 
+def make_url_tmpls():
+    res = URL_TMPLS.copy()
+
+    for pw in getpwall():
+        new_path = (path(pw.pw_dir) / "public_html").realpath()
+        new_url = "http://%s/~" + pw.pw_name
+        res[new_path] = new_url
+
+    return res
+
 def url(*filenames):
     # XXX: should fall back to getting hostname
     with open(HTTP_HOST_PATH) as http_host_file:
         http_host = http_host_file.readline().strip()
 
+    url_tmpls = make_url_tmpls()
+
     for filename in filenames:
         filepath = path(filename)
         realpath = filepath.realpath()
 
-        for url_path, url_tmpl in URL_TMPLS.iteritems():
+        for url_path, url_tmpl in url_tmpls.iteritems():
             if realpath.startswith(url_path):
                 url = url_tmpl % http_host
 
