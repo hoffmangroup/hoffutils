@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-if [ ! -d "/cygdrive/F/Gigacow" ]; then
-   echo Please connect the backup storage device.
+BACKUPDIR="/cygdrive/F/Gigacow"
+
+while [ ! -d "$BACKUPDIR" ]; do
+   echo "Please connect the backup storage device in $BACKUPDIR"
    read X
-fi
+done

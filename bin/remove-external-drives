@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+REMOVEDRIVE="$CYGPROGRAMFILES/Drive Tools/RemoveDrive.exe"
+
+"$REMOVEDRIVE" D: -b &
+"$REMOVEDRIVE" F: -b &
+"$REMOVEDRIVE" H: -b &
+
+read
