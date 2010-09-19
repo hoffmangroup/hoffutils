@@ -1,0 +1,8 @@
+#!/usr/bin/env python
+
+# http://cpbotha.net/2007/04/26/google-calendar-to-palm-desktop-conversion/
+
+import vcal
+import sys
+calendar = vcal.parse(sys.stdin.read())
+sys.stdout.write(calendar.as_vcal())

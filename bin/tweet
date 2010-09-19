@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# XXX: http://cutup.org/anize/?twitter_bash_curl looks like it would
+# be better
+
+curl --netrc --data status="$*" \
+    http://twitter.com/statuses/update.xml
