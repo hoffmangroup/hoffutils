@@ -3,6 +3,6 @@
 NEWDIR="$HOME/shortcuts/current-quarter/$(date +%Y-%m-%d)"
 
 mkdir -p "$NEWDIR"
-chmod a+r,ug+w "$NEWDIR"
+chmod a+rx,ug+w "$NEWDIR"
 cd "$NEWDIR"
 target

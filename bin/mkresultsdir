@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# -*- bash-mode; enable-local-variables: nil -*-
+
+# usage: mkresultsdir DESCRIPTION [SCRIPT]
 
 set -o nounset
 set -o pipefail
@@ -6,10 +9,17 @@ set -o errexit
 
 FILENAME=runall
 DESCRIPTION="$1"
+SCRIPT="${2:-SCRIPT}"
 YEAR="$(date +%Y)"
 MONTH="$(date +%m)"
 DAY="$(date +%d)"
-DIRNAME="$YEAR/$MONTH$DAY-$DESCRIPTION"
+DIRNAME="$MONTH$DAY-$DESCRIPTION"
+
+# if the current working directory is not $YEAR, then add it
+if [ "$(basename "$PWD")" != "$YEAR" ]; then
+    DIRNAME="$YEAR/$DIRNAME"
+fi
+
 SHORTCUTDIRNAME="$HOME/results/$YEAR/$MONTH"
 
 shift
@@ -24,7 +34,12 @@ else
 #!/usr/bin/env bash
 
 command cd -P .
-exec runall-wrapper $@
+exec runall-wrapper "$SCRIPT" \$@
+
+## Local variables:
+## wrapped-script: "$SCRIPT"
+## eval: (run-with-idle-timer 0.1 nil '(lambda () (find-file-other-window wrapped-script)))
+## End:
 EOF
 fi
 
@@ -34,6 +49,6 @@ echo "cd \"$DIRNAME\""
 
 # create a shortcut in a central location
 mkdir -p "$SHORTCUTDIRNAME"
-ln -s "$DIRNAME" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
+ln -s "$PWD/$DIRNAME" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
 
 # XXX: automatically creating an entry for the notebook might be helpful

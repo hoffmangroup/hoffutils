@@ -13,7 +13,7 @@ svn commit
 svn cp . "$REPO/tags/release-$VERSION" -m "tagging release $VERSION"
 
 # build docs
-pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
+pushd doc && (make html latexpdf man && evince _build/latex/*.pdf)
 popd
 
 # make release source

@@ -7,12 +7,13 @@ url: DESCRIPTION
 
 __version__ = "$Revision$"
 
-# Copyright 2009 Michael M. Hoffman <mmh1@washington.edu>
+# Copyright 2009, 2010 Michael M. Hoffman <mmh1@washington.edu>
 
 from os import environ
 from pwd import getpwall
 import sys
 
+from optbuild import OptionBuilder_LongOptWithSpace, Stdin
 from path import path
 
 # XXX: expand().realpath(), duplicative
@@ -25,35 +26,41 @@ HTTP_HOST_PATH = path("~/.httphost").expand()
 PUBLIC_HTML_URL_TMPL = "http://%s/~%s"
 FILE_URL_PREFIX = "file://"
 
+XSEL_PROG = OptionBuilder_LongOptWithSpace("xsel")
+
 def make_url_tmpls():
-    res = URL_TMPLS.copy()
-
-    for pw in getpwall():
-        new_path = (path(pw.pw_dir) / "public_html").realpath()
-        new_url = "http://%s/~" + pw.pw_name
-        res[new_path] = new_url
-
-    return res
-
-def url(*filenames):
     # XXX: should fall back to getting hostname
     with open(HTTP_HOST_PATH) as http_host_file:
         http_host = http_host_file.readline().strip()
 
+    res = dict((k, v % http_host) for k, v in URL_TMPLS.iteritems())
+
+    for pw in getpwall():
+        new_path = (path(pw.pw_dir) / "public_html").realpath()
+        new_url = "http://%s/~%s" % (http_host, pw.pw_name)
+        res[new_path] = new_url
+
+    return res
+
+def filename_url(filename, url_tmpls):
+    filepath = path(filename)
+    realpath = filepath.realpath()
+
+    for url_path, url_tmpl in url_tmpls.iteritems():
+        if realpath.startswith(url_path):
+            return realpath.replace(url_path, url_tmpl)
+
+    return FILE_URL_PREFIX + realpath
+
+def url(*filenames):
     url_tmpls = make_url_tmpls()
 
-    for filename in filenames:
-        filepath = path(filename)
-        realpath = filepath.realpath()
+    urls = [filename_url(filename, url_tmpls)
+            for filename in filenames]
+    url_text = "\n".join(urls)
 
-        for url_path, url_tmpl in url_tmpls.iteritems():
-            if realpath.startswith(url_path):
-                url = url_tmpl % http_host
-
-                print realpath.replace(url_path, url)
-                break
-        else:
-            print FILE_URL_PREFIX + realpath
+    print url_text
+    XSEL_PROG(Stdin(url_text), copy=True, selection="CLIPBOARD")
 
 def parse_options(args):
     from optparse import OptionParser

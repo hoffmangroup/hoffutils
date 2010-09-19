@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
-# do not start in background!
+
+# emacsitor:  do not start in background!
+# $Revision$
+# Copyright 2004,2010 Michael M. Hoffman <mmh1@uw.edu>
+
+# usage: emacsitor [OPTION-OR-FILENAME]...
+
+set -o nounset
+set -o pipefail
+set -o errexit
 
 _emacs-nox()
 {
@@ -15,7 +24,9 @@ _emacs-x()
     command emacs "$@"
 }
 
-if [ -n "${AVOIDX}" ]; then
+if [ "$TERM" == "eterm-color" ]; then
+    command emacsclient "$@"
+elif [ -n "${AVOIDX}" ]; then
     _emacs-nox "$@"
 elif [ -n "${DISPLAY}" ]; then
     _emacs-x "$@"
