@@ -12,7 +12,7 @@ set -o errexit
 
 _emacs-nox()
 {
-    if [ -n "${NOT_IN_TERMCAP}" ]; then
+    if [ -n "${NOT_IN_TERMCAP:-}" ]; then
         TERM=xterm command emacs -nw "$@"
     else
         command emacs -nw "$@"
@@ -26,9 +26,9 @@ _emacs-x()
 
 if [ "$TERM" == "eterm-color" ]; then
     command emacsclient "$@"
-elif [ -n "${AVOIDX}" ]; then
+elif [ -n "${AVOIDX:-}" ]; then
     _emacs-nox "$@"
-elif [ -n "${DISPLAY}" ]; then
+elif [ -n "${DISPLAY:-}" ]; then
     _emacs-x "$@"
 else
     command emacs "$@"
