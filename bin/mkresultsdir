@@ -7,6 +7,10 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
+# XXX: SCRIPT becomes always the name of the results dir
+# XXX: instead, specify a directory for it to go in
+# XXX: use newbash to create it
+
 FILENAME=runall
 DESCRIPTION="$1"
 SCRIPT="${2:-SCRIPT}"
@@ -34,7 +38,7 @@ else
 #!/usr/bin/env bash
 
 command cd -P .
-exec runall-wrapper "$SCRIPT" \$@
+exec runall-wrapper "$SCRIPT" "\$@"
 
 ## Local variables:
 ## wrapped-script: "$SCRIPT"

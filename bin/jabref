@@ -1,1 +1,3 @@
-java -jar ~/lib/java/JabRef.jar
+#!/usr/bin/env bash
+
+exec java -jar ~/lib/java/JabRef.jar "$@"

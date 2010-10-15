@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -x
+
+# $Namebase$: DESCRIPTION
+# $Revision: 467 $
+# Copyright $Year$ Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset pipefail errexit
+
+echo "$@"
+
+python -m pdb "$@"

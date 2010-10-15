@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# emacsclient-top: DESCRIPTION
+# $Revision: 467 $
+# Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [ "$TERM" == "eterm-color" ]; then
+    command emacsclient "$@"
+else
+    ## XXX: doesn't work for multiple files
+    ## XXX: race condition, from getting proc from (car server-clients)
+    ## wmctrl activates frame and brings it to the top
+    command emacsclient -c -e \
+        "(let ((new-buffer (find-file \"$1\"))
+               (proc (car server-clients)))
+           (process-put proc 'buffers (list new-buffer))
+           (setq server-buffer-clients (list proc)))" \
+        "(shell-command (concat \"wmctrl -i -a \" (frame-parameter nil 'outer-window-id))))"
+fi
