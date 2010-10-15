@@ -26,10 +26,8 @@ _emacs-x()
 
 if [ "$TERM" == "eterm-color" ]; then
     command emacsclient "$@"
-elif [ -n "${AVOIDX:-}" ]; then
-    _emacs-nox "$@"
-elif [ -n "${DISPLAY:-}" ]; then
+elif [[ "${DISPLAY:$((${#DISPLAY}-2))}" == ":0" || "${DISPLAY:$((${#DISPLAY}-4))}" == ":0.0" ]]; then
     _emacs-x "$@"
 else
-    command emacs "$@"
+    _emacs-nox "$@"
 fi
