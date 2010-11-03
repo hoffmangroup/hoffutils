@@ -7,13 +7,13 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
-# XXX: SCRIPT becomes always the name of the results dir
-# XXX: instead, specify a directory for it to go in
-# XXX: use newbash to create it
+if [ "${1:-}" == "" ]; then
+    echo usage: mkresultsdir DESCRIPTION [SCRIPT]
+fi
 
 FILENAME=runall
 DESCRIPTION="$1"
-SCRIPT="${2:-SCRIPT}"
+SCRIPT="${2:-../../src/${1}.sh}" # XXX: should modify if in year directory
 YEAR="$(date +%Y)"
 MONTH="$(date +%m)"
 DAY="$(date +%d)"
@@ -42,17 +42,16 @@ exec runall-wrapper "$SCRIPT" "\$@"
 
 ## Local variables:
 ## wrapped-script: "$SCRIPT"
-## eval: (run-with-idle-timer 0.1 nil '(lambda () (find-file-other-window wrapped-script)))
 ## End:
 EOF
 fi
 
 chmod a+rx "$FILENAME"
 
-echo "cd \"$DIRNAME\""
-
 # create a shortcut in a central location
 mkdir -p "$SHORTCUTDIRNAME"
-ln -s "$PWD/$DIRNAME" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
+ln -sfT "$PWD" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
+
+emacsclient --no-wait "$FILENAME"
 
 # XXX: automatically creating an entry for the notebook might be helpful

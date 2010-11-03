@@ -19,3 +19,9 @@ python setup.py install --prefix="$PREFIX" \
     --install-lib="$PREFIX/lib/python$PYTHON_VERSION" \
     --install-scripts="$PREFIX/bin" \
     --single-version-externally-managed --record=/dev/null
+
+if [ -d "doc" ] && make -C doc man; then
+    MANDIR="$PREFIX/man/man1"
+    install --verbose --mode=ug=rwx,o=rx -d "$MANDIR"
+    install --verbose --mode=ug=rw,o=r doc/_build/man/* "$MANDIR"
+fi
