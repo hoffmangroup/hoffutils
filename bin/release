@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 
+## test.sh: x
+
 # acquire information
 REPO="$(svn info | grep "^URL: " | perl -pe 's/^URL: //; s/trunk$//')"
 NAME="$(python setup.py --name)"
 VERSION="$(python setup.py --version)"
 MODDIR="/net/noble/vol1/software/modules/${NAME}"
 
-perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$VERSION\"/" \
-    install.py install.tmpl
+if [ -e install.py ]; then
+    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$VERSION\"/" \
+        install.py install.tmpl
+fi
 
 svn commit
 svn cp . "$REPO/tags/release-$VERSION" -m "tagging release $VERSION"
 
 # build docs
-pushd doc && (make html latexpdf man && evince _build/latex/*.pdf)
-popd
+if [ -d doc ]; then
+    pushd doc && (make html latexpdf man && evince _build/latex/*.pdf)
+    popd
+fi
 
 # make release source
 python setup.py release # alias for egg_info --no-svn-revision --tag-build '' sdist bdist_egg
@@ -41,7 +47,8 @@ tar zxvf "${NAME}-${VERSION}.tar.gz"
 pushd "${NAME}-${VERSION}"
 
 install-python-module "$PWD"
-ssh n001 install-python-module "$PWD"
+# no longer supporting i686
+#ssh n001 install-python-module "$PWD"
 
 # setup module file
 OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
