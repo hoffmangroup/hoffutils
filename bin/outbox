@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
 
-HTTPHOST="$(cat ~/.httphost 2> /dev/null)"
+## outbox: copy files to web outbox
 
-# default value if there is no ~/.httphost
-HTTPHOST="${HTTPHOST:-$(hostname --long)}"
+## $Revision$
+## Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
 
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [ $# -lt 2 ]; then
+    echo usage: "$0" DIRNAME FILE...
+    exit 2
+fi
+
+DIRNAME="$(date +%Y)/outbox/$1"
+shift
+
+HTTPHOST="$(cat ~/.httphost 2> /dev/null || hostname --long)"
 BASEURL="http://${HTTPHOST}/~${LOGNAME}"
 BASEDIRNAME="$HOME/public_html"
-DIRNAME="$(date +%Y)/outbox/$1"
-
-shift
 
 for FILENAME in "$@"; do
     WHOLEDIRNAME="$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")"
