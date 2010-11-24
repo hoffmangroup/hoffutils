@@ -19,8 +19,10 @@ fi
 DOCDIR="$WWWDIR/doc/$VERSION"
 
 # make docs
-pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
-popd
+if [ -d doc ]; then
+    pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
+    popd
+fi
 
 # register and upload software
 # segway is still not public

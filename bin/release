@@ -1,9 +1,25 @@
 #!/usr/bin/env bash
 
-## test.sh: x
+## release: release new version of Python software
+
+## $Revision$
+## Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [ $# != 0 ]; then
+    echo usage: "$0"
+    exit 2
+fi
 
 # acquire information
-REPO="$(svn info | grep "^URL: " | perl -pe 's/^URL: //; s/trunk$//')"
+TRUNK_URL="$(svnurl)"
+REPO="${TRUNK_URL%/trunk}"
+
+[ "$REPO" != "$TRUNK_URL" ]
+
 NAME="$(python setup.py --name)"
 VERSION="$(python setup.py --version)"
 MODDIR="/net/noble/vol1/software/modules/${NAME}"
@@ -14,7 +30,12 @@ if [ -e install.py ]; then
 fi
 
 svn commit
-svn cp . "$REPO/tags/release-$VERSION" -m "tagging release $VERSION"
+
+
+TAG_URL="$REPO/tags/release-$VERSION"
+svn cp . "$TAG_URL" -m "tagging release $VERSION" || \
+    svn switch "$TAG_URL" && svn merge "$TAG_URL" "$TRUNK_URL" \
+    && svn commit -m "brownbag"
 
 # build docs
 if [ -d doc ]; then
@@ -33,10 +54,12 @@ read NEXTVERSION
 perl -i~ -pe "s/__version__ = \".*\"/__version__ = \"$NEXTVERSION\"/" \
     setup.py
 
-perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$NEXTVERSION\"/" \
-    install.py install.tmpl
+if [ -e install.py ]; then
+    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$NEXTVERSION\"/" \
+        install.py install.tmpl
+fi
 
-mv NEWS NEWS~
+mv NEWS NEWS~ 2>&1 || touch NEWS~
 echo -e "$NEXTVERSION:\n\n\n" | cat - NEWS~ > NEWS
 
 svn commit -m "increment release"
@@ -50,9 +73,15 @@ install-python-module "$PWD"
 # no longer supporting i686
 #ssh n001 install-python-module "$PWD"
 
+if [ -d "$MODDIR" ]; then
 # setup module file
-OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
+    OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
 
-perl -pe "s/^(set.*_VERSION.*)$OLDVERSION/\${1}$VERSION/g" "$MODDIR/$OLDVERSION" > "$MODDIR/$VERSION"
+    perl -pe "s/^(set.*_VERSION.*)$OLDVERSION/\${1}$VERSION/g" "$MODDIR/$OLDVERSION" > "$MODDIR/$VERSION"
+else
+    mkdir -p "$MODDIR"
+    echo "module file does not exist" >&2
+    "$VISUAL" "$MODDIR/$VERSION"
+fi
 
 echo "$PWD"

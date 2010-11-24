@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+## svnurl: print URL for an SVN directory
+
+## $Revision$
+## Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+svn info "$@" | grep "^URL: " | perl -pe 's/^URL: //'
