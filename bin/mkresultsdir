@@ -52,6 +52,6 @@ chmod a+rx "$FILENAME"
 mkdir -p "$SHORTCUTDIRNAME"
 ln -sfT "$PWD" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
 
-emacsclient --no-wait "$FILENAME"
+"$VISUAL" --no-wait "$FILENAME"
 
 # XXX: automatically creating an entry for the notebook might be helpful

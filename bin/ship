@@ -9,11 +9,13 @@ VERSION="$(python setup.py --version)"
 WWWDIR="/nfs/noble/www/htdocs/proj/$NAME"
 if [ ! -d "$WWWDIR" ]; then
     WWWDIR="$HOME/public_html/software/$NAME"
+    mkdir -p "$WWWDIR"
 fi
 
 SRCDIR="$WWWDIR/src"
 if [ ! -d "$SRCDIR" ]; then
     SRCDIR="$WWWDIR"
+    mkdir -p "$SRCDIR"
 fi
 
 DOCDIR="$WWWDIR/doc/$VERSION"
@@ -44,9 +46,9 @@ if [ ! -d "$DOCDIR" ]; then
 fi
 
 mkdir -p "$DOCDIR"
-cp -rv doc/_build/html/* "$DOCDIR"
-cp -v doc/_build/latex/*.pdf "$DOCDIR"
+cp -rv doc/_build/html/* "$DOCDIR" || echo >&2 "no HTML docs"
+cp -v doc/_build/latex/*.pdf "$DOCDIR" || echo >&2 "no LaTeX docs"
 
-cp -v install.py "$WWWDIR"
+cp -v install.py "$WWWDIR" || echo >&2 "no install.py"
 
-emacs "$WWWDIR/index.html"
+"$VISUAL" "$WWWDIR/index.html"
