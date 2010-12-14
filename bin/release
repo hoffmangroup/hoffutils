@@ -70,8 +70,7 @@ tar zxvf "${NAME}-${VERSION}.tar.gz"
 pushd "${NAME}-${VERSION}"
 
 install-python-module "$PWD"
-# no longer supporting i686
-#ssh n001 install-python-module "$PWD"
+ssh histidine install-python-module "$PWD"
 
 if [ -d "$MODDIR" ]; then
 # setup module file
@@ -84,4 +83,4 @@ else
     "$VISUAL" "$MODDIR/$VERSION"
 fi
 
-echo "$PWD"
+echo "to ship: ship $PWD"

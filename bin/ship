@@ -3,6 +3,10 @@
 ## run this after release
 ## start in a fresh dist/$NAME-$VERSION directory
 
+# XXX: turn robust bash settings on
+
+cd "${1:-.}"
+
 NAME="$(python setup.py --name)"
 VERSION="$(python setup.py --version)"
 
