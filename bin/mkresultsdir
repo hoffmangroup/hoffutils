@@ -2,6 +2,7 @@
 # -*- bash-mode; enable-local-variables: nil -*-
 
 # usage: mkresultsdir DESCRIPTION [SCRIPT]
+# to not run an editor just use VISUAL=true mkresultsdir
 
 set -o nounset
 set -o pipefail
