@@ -1,0 +1,9 @@
+#!/bin/bash
+
+EMACSBIN="${CYGPROGRAMFILES}/GNU Emacs/bin/emacsclient"
+
+if [ $# -gt 0 ]; then
+    cygpath -w -- "$@" | xargs -d '\n' "${EMACSBIN}" -a emacs -n
+else
+    "${EMACSBIN}" -a emacs -n
+fi
