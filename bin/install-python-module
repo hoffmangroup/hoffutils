@@ -2,7 +2,7 @@
 
 # install-python-module: 
 # $Revision$
-# Copyright 2008-2010 Michael M. Hoffman <mmh1@uw.edu>
+# Copyright 2008-2011 Michael M. Hoffman <mmh1@uw.edu>
 
 # usage: install-python-module DIRNAME
 
@@ -15,9 +15,11 @@ VERSION="$(python setup.py --version)"
 PREFIX="$MOD_NOBLESW/$PACKAGE/$VERSION/$MODULES_OS/$MODULES_REL/$MODULES_MACH"
 PYTHON_VERSION=$(python -S -c "import sys; print sys.version[:3]")
 
+# scripts are in a python$PYTHON_VERSION directory because the shbang
+# lines are hard-coded by setuptools
 python setup.py install --prefix="$PREFIX" \
     --install-lib="$PREFIX/lib/python$PYTHON_VERSION" \
-    --install-scripts="$PREFIX/bin" \
+    --install-scripts="$PREFIX/bin/python$PYTHON_VERSION" \
     --single-version-externally-managed --record=/dev/null
 
 if [ -d "doc" ] && make -C doc man; then
