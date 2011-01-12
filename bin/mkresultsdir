@@ -34,7 +34,8 @@ cd "$DIRNAME"
 
 if [ -e "$FILENAME" ]; then
     echo "$FILENAME already exists" >&2
-else
+# if $SCRIPT is not null
+elif [ "$SCRIPT" ]; then
     cat > "$FILENAME" << EOF
 #!/usr/bin/env bash
 
@@ -45,9 +46,9 @@ exec runall-wrapper "$SCRIPT" "\$@"
 ## wrapped-script: "$SCRIPT"
 ## End:
 EOF
-fi
 
-chmod a+rx "$FILENAME"
+    chmod a+rx "$FILENAME"
+fi
 
 # create a shortcut in a central location
 mkdir -p "$SHORTCUTDIRNAME"
