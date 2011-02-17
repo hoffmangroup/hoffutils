@@ -17,16 +17,16 @@ fi
 
 if [ "$TERM" == "eterm-color" ]; then
     command emacsclient $NOWAIT "$@"
-else
-    ## XXX: does this work remotely?
-
+elif [[ "${DISPLAY:$((${#DISPLAY}-2))}" == ":0" || "${DISPLAY:$((${#DISPLAY}-4))}" == ":0.0" ]]; then
     ## XXX: doesn't work for multiple files
     ## XXX: race condition, from getting proc from (car server-clients)
     ## wmctrl activates frame and brings it to the top
-    command emacsclient -a "" -c $NOWAIT -e \
+    command emacsclient $NOWAIT -a "" -c -e \
         "(let ((new-buffer (find-file \"$1\"))
                (proc (car server-clients)))
            (process-put proc 'buffers (list new-buffer))
            (setq server-buffer-clients (list proc)))" \
         "(shell-command (concat \"wmctrl -i -a \" (frame-parameter nil 'outer-window-id))))"
+else
+    command emacsclient $NOWAIT -a "" "$@"
 fi
