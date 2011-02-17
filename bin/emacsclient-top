@@ -2,19 +2,28 @@
 
 # emacsclient-top: DESCRIPTION
 # $Revision: 467 $
-# Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+# Copyright 2010, 2011 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset
 set -o pipefail
 set -o errexit
 
-if [ "$TERM" == "eterm-color" ]; then
-    command emacsclient "$@"
+if [[ "$1" == "--no-wait" || "$1" == "-n" ]]; then
+    NOWAIT=--no-wait
+    shift
 else
+    NOWAIT=
+fi
+
+if [ "$TERM" == "eterm-color" ]; then
+    command emacsclient $NOWAIT "$@"
+else
+    ## XXX: does this work remotely?
+
     ## XXX: doesn't work for multiple files
     ## XXX: race condition, from getting proc from (car server-clients)
     ## wmctrl activates frame and brings it to the top
-    command emacsclient -c -e \
+    command emacsclient -a "" -c $NOWAIT -e \
         "(let ((new-buffer (find-file \"$1\"))
                (proc (car server-clients)))
            (process-put proc 'buffers (list new-buffer))

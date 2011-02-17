@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
 
-set -x
+## pdb: run python debugger
 
-# $Namebase$: DESCRIPTION
-# $Revision: 467 $
-# Copyright $Year$ Michael M. Hoffman <mmh1@uw.edu>
+## $Revision$
+## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset pipefail errexit
+set -o nounset
+set -o pipefail
+set -o errexit
 
-echo "$@"
+if [ $# == 0 ]; then
+    python -m pdb
+    exit 2
+fi
 
-python -m pdb "$@"
+SCRIPTFILE="$1"
+shift
+
+if [ ! -f "$SCRIPTFILE" ]; then
+    SCRIPTFILE="$(which "$SCRIPTFILE")"
+fi
+
+python -m pdb "$SCRIPTFILE" "$@"

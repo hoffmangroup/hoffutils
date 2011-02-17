@@ -14,6 +14,7 @@ if [ $# != 1 ]; then
     exit 2
 fi
 
-rsync -rtvz --exclude output --exclude posterior --exclude viterbi \
+rsync -rtvz --links --exclude output --exclude posterior \
+    --exclude viterbi \
     --exclude observations --exclude "*.observations" --exclude accumulators \
     $1:${PWD/$HOME/'~'}/ .

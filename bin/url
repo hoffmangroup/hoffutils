@@ -55,6 +55,9 @@ def filename_url(filename, url_tmpls):
 def url(*filenames):
     url_tmpls = make_url_tmpls()
 
+    if not filenames:
+        filenames = ["."]
+
     urls = [filename_url(filename, url_tmpls)
             for filename in filenames]
     url_text = "\n".join(urls)

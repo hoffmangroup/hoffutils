@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+## mkresultsdir_segtools: make a segtools results dir
+
+## $Revision$
+## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [ $# != 2 ]; then
+    echo usage: "$0" DESCRIPTION TRAIN/IDENTIFYPARENTDIRNAME
+    exit 2
+fi
+
+DESCRIPTION="$1"
+PARENTDIRNAME="$2"
+
+if [[ ! "${PARENTDIRNAME}" =~ : ]]; then
+    PARENTDIRNAME="$(readlink -f "$2")"
+fi
+
+RESULTSDIRNAME="$(resultsdirname.sh "$DESCRIPTION")"
+
+VISUAL=true mkresultsdir "$DESCRIPTION" "./segtools_validate_hg19.sh"
+command cd "$RESULTSDIRNAME"
+~/src/projects/segtools/config_segtools_validate.sh "$PARENTDIRNAME"
+
+echo >&2 "To run now:"
+echo >&2 "n001"
+echo >&2 "./runall"
