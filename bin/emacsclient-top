@@ -8,6 +8,8 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
+DISPLAY=${DISPLAY:-}
+
 if [[ "$1" == "--no-wait" || "$1" == "-n" ]]; then
     NOWAIT=--no-wait
     shift
@@ -28,5 +30,5 @@ elif [[ "${DISPLAY:$((${#DISPLAY}-2))}" == ":0" || "${DISPLAY:$((${#DISPLAY}-4))
            (setq server-buffer-clients (list proc)))" \
         "(shell-command (concat \"wmctrl -i -a \" (frame-parameter nil 'outer-window-id))))"
 else
-    command emacsclient $NOWAIT -a "" "$@"
+    command emacsclient $NOWAIT -nw -a "" "$@"
 fi
