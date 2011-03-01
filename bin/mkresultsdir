@@ -10,11 +10,12 @@ set -o errexit
 
 if [[ $# -lt 1 || $# -gt 2 ]]; then
     echo usage: "$0" DESCRIPTION [SCRIPT]
+    exit 2
 fi
 
 FILENAME=runall
 DESCRIPTION="$1"
-SCRIPT="${2:-../../src/${1}.sh}" # XXX: should modify if in year directory
+SCRIPT="${2:-../../src/${1}.sh}"
 YEAR="$(date +%Y)"
 MONTH="$(date +%m)"
 DAY="$(date +%d)"
