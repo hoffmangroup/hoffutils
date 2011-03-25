@@ -22,13 +22,7 @@ if [ ! -d "$SRCDIR" ]; then
     mkdir -p "$SRCDIR"
 fi
 
-DOCDIR="$WWWDIR/doc/$VERSION"
-
-# make docs
-if [ -d doc ]; then
-    pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
-    popd
-fi
+ship-doc
 
 # register and upload software
 # segway is still not public
@@ -43,15 +37,6 @@ fi
 # copy software
 cp -v "dist/$NAME-$VERSION.tar.gz" \
     "dist/$NAME-$VERSION-py$PYTHON_VERSION"*.egg "$SRCDIR"
-
-# copy docs
-if [ ! -d "$DOCDIR" ]; then
-    rm -r "$DOCDIR"
-fi
-
-mkdir -p "$DOCDIR"
-cp -rv doc/_build/html/* "$DOCDIR" || echo >&2 "no HTML docs"
-cp -v doc/_build/latex/*.pdf "$DOCDIR" || echo >&2 "no LaTeX docs"
 
 cp -v install.py "$WWWDIR" || echo >&2 "no install.py"
 

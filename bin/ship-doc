@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+## docship: ship docs only
+
+## $Revision$
+## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [ $# -gt 1 ]; then
+    echo usage: "$0" DIRNAME
+    exit 2
+fi
+
+cd "${1:-.}"
+
+NAME="$(python setup.py --name)"
+VERSION="$(python setup.py --version)"
+
+### XXX: must change for install at EBI
+
+WWWDIR="/nfs/noble/www/htdocs/proj/$NAME"
+if [ ! -d "$WWWDIR" ]; then
+    WWWDIR="$HOME/public_html/software/$NAME"
+    mkdir -p "$WWWDIR"
+fi
+
+DOCDIR="$WWWDIR/doc/$VERSION"
+
+# make docs
+if [ -d doc ]; then
+    pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
+    popd
+fi
+
+# copy docs
+if [ ! -d "$DOCDIR" ]; then
+    rm -r "$DOCDIR"
+fi
+
+
+mkdir -p "$DOCDIR"
+cp -rv doc/_build/html/* "$DOCDIR" || echo >&2 "no HTML docs"
+cp -v doc/_build/latex/*.pdf "$DOCDIR" || echo >&2 "no LaTeX docs"
