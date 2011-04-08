@@ -31,15 +31,14 @@ DOCDIR="$WWWDIR/doc/$VERSION"
 
 # make docs
 if [ -d doc ]; then
-    pushd doc && (make html latex && make -C _build/latex all-pdf && evince _build/latex/*.pdf)
+    pushd doc && (make html latexpdf && evince _build/latex/*.pdf)
     popd
 fi
 
 # copy docs
-if [ ! -d "$DOCDIR" ]; then
+if [ -d "$DOCDIR" ]; then
     rm -r "$DOCDIR"
 fi
-
 
 mkdir -p "$DOCDIR"
 cp -rv doc/_build/html/* "$DOCDIR" || echo >&2 "no HTML docs"

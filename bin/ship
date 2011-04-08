@@ -5,6 +5,10 @@
 
 # XXX: turn robust bash settings on
 
+set -o nounset
+set -o pipefail
+set -o errexit
+
 cd "${1:-.}"
 
 NAME="$(python setup.py --name)"
@@ -25,12 +29,8 @@ fi
 ship-doc
 
 # register and upload software
-# segway is still not public
-if [ "$NAME" == "segway" ]; then
-    python setup.py release
-else
-    python setup.py release register upload
-fi
+# XXX: don't want to do register or upload if it's not public
+python setup.py release register upload
 
 ### XXX: everything from here on must change for install at EBI
 
@@ -40,4 +40,4 @@ cp -v "dist/$NAME-$VERSION.tar.gz" \
 
 cp -v install.py "$WWWDIR" || echo >&2 "no install.py"
 
-"$VISUAL" "$WWWDIR/index.html"
+emacsclient-top "$WWWDIR/index.html"
