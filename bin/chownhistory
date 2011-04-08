@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+TOUSER=hoffman
+DIR=$(dirname ${HISTFILE})
+
+chown -R ${TOUSER}:${TOUSER} ${DIR}

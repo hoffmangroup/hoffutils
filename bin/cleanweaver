@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+echo "library(weaver); Sweave(\"$1\", driver=weaver(), use.cache=FALSE)" \
+     | R --slave --no-save --no-restore
