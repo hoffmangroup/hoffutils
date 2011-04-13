@@ -53,6 +53,8 @@ ln -sfT "$PWD" "$SHORTCUTDIRNAME/$DAY-$DESCRIPTION"
 if [ "$VISUAL" == "emacsitor" ]; then
     VISUAL=emacsclient-top
     NOWAIT=--no-wait
+else
+    NOWAIT=
 fi
 
 "$VISUAL" $NOWAIT "$FILENAME"
