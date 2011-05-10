@@ -8,6 +8,7 @@
 set -o nounset
 set -o pipefail
 set -o errexit
+set -x
 
 if [ $# != 0 ]; then
     echo usage: "$0"
@@ -32,7 +33,10 @@ fi
 svn commit
 
 TAG_URL="$REPO/tags/release-$VERSION"
-svn rm -m "brownbag" "$TAG_URL"
+
+if svn ls "$TAG_URL" 2>/dev/null; then
+    echo svn rm -m "brownbag" "$TAG_URL"
+fi
 svn cp . "$TAG_URL" -m "tagging release $VERSION"
 
 # build docs

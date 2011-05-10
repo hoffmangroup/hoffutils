@@ -7,7 +7,6 @@
 set -o nounset
 set -o pipefail
 set -o errexit
-set -x
 
 if [[ $# -lt 1 || $# -gt 2 ]]; then
     echo usage: "$0" DESCRIPTION [SCRIPT]
@@ -60,3 +59,5 @@ fi
 "$VISUAL" $NOWAIT "$FILENAME"
 
 # XXX: automatically creating an entry for the notebook might be helpful
+
+echo "$PWD"

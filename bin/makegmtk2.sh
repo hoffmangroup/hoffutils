@@ -14,9 +14,16 @@ if [ $# != 0 ]; then
     exit 2
 fi
 
+OPTFLAGS="${OPTFLAGS:--O3 -march=nocona}"
+DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
+CFLAGS=-pipe
+CXXFLAGS="$CFLAGS"
+MAKEFLAGS="-j 3 CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS OPTFLAGS=$OPTFLAGS DEBUGFLAGS=$DEBUGFLAGS"
+
 cd ~/src/collab/gmtk
-make clean
+make $MAKEFLAGS clean || true
 hg pull -u # get the latest changes
-configure-home --with-logp=table --enable-silent-rules
-CFLAGS=-pipe CXXFLAGS=-pipe make -j 3 DEBUGFLAGS="-ggdb3" OPTFLAGS="-O3 -march=nocona"
-CFLAGS=-pipe CXXFLAGS=-pipe make -j 3 DEBUGFLAGS="-ggdb3" OPTFLAGS="-O3 -march=nocona" install
+configure-home --with-logp=table
+make $MAKEFLAGS
+make $MAKEFLAGS install
+ln -sfv gmtkEMtrain "$ARCHHOME/bin/gmtkEMtrainNew"

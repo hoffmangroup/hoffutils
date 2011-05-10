@@ -10,7 +10,8 @@ set -o pipefail
 set -o errexit
 
 if [ $# != 1 ]; then
-    echo usage: "$0" FILENAME
+    echo usage: "$0" FILENAME >&2
+    echo FILENAME is with respect to commonData "byDataType/signal/jan2011/genomedata.tier1-2" >&2
     exit 2
 fi
 
