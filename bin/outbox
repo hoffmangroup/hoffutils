@@ -26,7 +26,7 @@ for FILENAME in "$@"; do
     WHOLEDIRNAME="$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")"
 
     mkdir -p "$WHOLEDIRNAME"
-    cp -r "$FILENAME" "$WHOLEDIRNAME"
+    cp -pr "$FILENAME" "$WHOLEDIRNAME"
 
     echo "$BASEURL/$DIRNAME/$FILENAME"
 done

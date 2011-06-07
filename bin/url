@@ -5,24 +5,63 @@ from __future__ import division, with_statement
 url: DESCRIPTION
 """
 
-__version__ = "$Revision$"
+__version__ = "$Revision: 532 $"
 
-# Copyright 2009, 2010 Michael M. Hoffman <mmh1@washington.edu>
+# Copyright 2009, 2010, 2011 Michael M. Hoffman <mmh1@washington.edu>
 
-from os import environ
+from functools import partial
 from pwd import getpwall
+from posixpath import islink as _islink, realpath as _realpath
+import posixpath
 import sys
 
 from optbuild import OptionBuilder_LongOptWithSpace, Stdin
 from path import path
 
+## from http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
+class memoized(object):
+    """Decorator that caches a function's return value each time it is called.
+    If called later with the same arguments, the cached value is returned, and
+    not re-evaluated.
+    """
+    def __init__(self, func):
+        self.func = func
+        self.cache = {}
+    def __call__(self, *args):
+        try:
+            return self.cache[args]
+        except KeyError:
+            value = self.func(*args)
+            self.cache[args] = value
+            return value
+        except TypeError:
+            # uncachable -- for instance, passing a list as an argument.
+            # Better to not cache than to blow up entirely.
+            return self.func(*args)
+    def __repr__(self):
+        """Return the function's docstring."""
+        return self.func.__doc__
+    def __get__(self, obj, objtype):
+        """Support instance methods."""
+        return partial(self.__call__, obj)
+
+@memoized
+def islink(p):
+    return _islink(p)
+
+# XXX: monkey-patching!
+posixpath.islink = islink
+
+def realpath(filename):
+    return path(_realpath(filename))
+
 # XXX: expand().realpath(), duplicative
 # XXX: shouldn't hardcode /nfs/noble, etc.
-URL_TMPLS = {path("/nfs/noble/www/htdocs/").expand().realpath():
+URL_TMPLS = {realpath(path("/nfs/noble/www/htdocs/").expand()):
                  "http://%s"}
 
-PUBLIC_HTML_PATH = path("~/public_html").expand().realpath()
-HTTP_HOST_PATH = path("~/.httphost").expand()
+PUBLIC_HTML_PATH = realpath(path("~/public_html").expand())
+HTTP_HOST_PATH = realpath(path("~/.httphost").expand())
 PUBLIC_HTML_URL_TMPL = "http://%s/~%s"
 FILE_URL_PREFIX = "file://"
 
@@ -36,21 +75,23 @@ def make_url_tmpls():
     res = dict((k, v % http_host) for k, v in URL_TMPLS.iteritems())
 
     for pw in getpwall():
-        new_path = (path(pw.pw_dir) / "public_html").realpath()
+        # removing realpath here because it is expensive to do for every user
+
+        # XXX: perhaps we could cache this daily
+        new_path = path(pw.pw_dir) / "public_html"
         new_url = "http://%s/~%s" % (http_host, pw.pw_name)
         res[new_path] = new_url
 
     return res
 
 def filename_url(filename, url_tmpls):
-    filepath = path(filename)
-    realpath = filepath.realpath()
+    filepath = realpath(filename)
 
     for url_path, url_tmpl in url_tmpls.iteritems():
-        if realpath.startswith(url_path):
-            return realpath.replace(url_path, url_tmpl)
+        if filepath.startswith(url_path):
+            return filepath.replace(url_path, url_tmpl)
 
-    return FILE_URL_PREFIX + realpath
+    return FILE_URL_PREFIX + filepath
 
 def url(*filenames):
     url_tmpls = make_url_tmpls()
