@@ -9,7 +9,7 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
-if [[ $# != 0 || "$1" == "--help" || "$1" == "-h" ]]; then
+if [[ $# == 0 || "$1" == "--help" || "$1" == "-h" ]]; then
     echo usage: "$0"
     exit 2
 fi
@@ -18,4 +18,4 @@ if [ "$CFLAGS" ]; then
     CFLAGS="$CFLAGS -fno-strict-aliasing"
 fi
 
-"$0"
+"$@"
