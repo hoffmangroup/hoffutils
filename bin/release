@@ -35,7 +35,7 @@ svn commit
 TAG_URL="$REPO/tags/release-$VERSION"
 
 if svn ls "$TAG_URL" 2>/dev/null; then
-    echo svn rm -m "brownbag" "$TAG_URL"
+    svn rm -m "brownbag" "$TAG_URL"
 fi
 svn cp . "$TAG_URL" -m "tagging release $VERSION"
 
@@ -71,11 +71,11 @@ pushd dist
 tar zxvf "${NAME}-${VERSION}.tar.gz"
 pushd "${NAME}-${VERSION}"
 
-install-python-module "$PWD"
-ssh histidine install-python-module "$PWD"
-
 if [ -d "$MODDIR" ]; then
-# setup module file
+    install-python-module "$PWD"
+    ssh histidine install-python-module "$PWD"
+
+    ## setup module file
     OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
 
     perl -pe "s/^(set.*_VERSION.*)$OLDVERSION/\${1}$VERSION/g" "$MODDIR/$OLDVERSION" > "$MODDIR/$VERSION"
