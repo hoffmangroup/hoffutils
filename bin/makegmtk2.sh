@@ -14,16 +14,22 @@ if [ $# != 0 ]; then
     exit 2
 fi
 
+NEW="${NEW:-}"
+
 OPTFLAGS="${OPTFLAGS:--O3 -march=nocona}"
 DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
 CFLAGS=-pipe
 CXXFLAGS="$CFLAGS"
-MAKEFLAGS="-j 3 CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS OPTFLAGS=$OPTFLAGS DEBUGFLAGS=$DEBUGFLAGS"
+MAKEFLAGS=(-j 3 CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS OPTFLAGS=$OPTFLAGS DEBUGFLAGS=$DEBUGFLAGS)
 
 cd ~/src/collab/gmtk
-make $MAKEFLAGS clean || true
-hg pull -u # get the latest changes
-configure-home --with-logp=table
-make $MAKEFLAGS
-make $MAKEFLAGS install
-ln -sfv gmtkEMtrain "$ARCHHOME/bin/gmtkEMtrainNew"
+
+if [ "$NEW" ]; then
+    make $MAKEFLAGS clean || true
+    hg pull -u # get the latest changes
+    autoreconf -i
+fi
+
+configure-home --with-logp=table --with-LZERO=-1.0E20
+make "${MAKEFLAGS[@]}"
+make "${MAKEFLAGS[@]}" install
