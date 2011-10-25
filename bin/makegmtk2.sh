@@ -10,11 +10,12 @@ set -o pipefail
 set -o errexit
 
 if [ $# != 0 ]; then
-    echo usage: "$0"
+    echo usage: "$0" [DIR]
     exit 2
 fi
 
 NEW="${NEW:-}"
+DIR="${1:-$HOME/src/collab/gmtk}" # . for current dir
 
 OPTFLAGS="${OPTFLAGS:--O3 -march=nocona}"
 DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
@@ -26,7 +27,7 @@ MAKEFLAGS=(-j 3 "CFLAGS=$CFLAGS" "CXXFLAGS=$CXXFLAGS" "OPTFLAGS=$OPTFLAGS"
 # test suite location
 export TEST_AND_DEV="$HOME/src/collab/test_and_dev"
 
-cd ~/src/collab/gmtk
+cd "$DIR"
 
 if [ "$NEW" ]; then
     make $MAKEFLAGS clean || true
