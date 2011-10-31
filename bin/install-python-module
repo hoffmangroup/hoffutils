@@ -6,6 +6,8 @@
 
 # usage: install-python-module DIRNAME
 
+# XXX: being able to specify an archive file would be good too
+
 DIRNAME="${1:-.}"
 
 cd "$DIRNAME"
