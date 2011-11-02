@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+## cygrunsrv-all: signal to all running cygservices
+
+## $Revision$
+## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset
+set -o pipefail
+set -o errexit
+
+if [[ $# != 1 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0" COMMAND
+    exit 2
+fi
+
+COMMAND="$1" # start or stop
+
+cygrunsrv --list | xargs -n 1 cygrunsrv -V "--$COMMAND"
