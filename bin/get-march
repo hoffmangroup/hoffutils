@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 hostname
-gcc -c -Q -march=native --help=target | fgrep march | tr -s ' ' $'\t' | cut -f 3
+gcc -c -Q -march=native --help=target | fgrep march | tr -s ' ' $'\t' \
+    | cut -f 3

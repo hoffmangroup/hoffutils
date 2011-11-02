@@ -5,9 +5,7 @@
 ## $Revision$
 ## Copyright 2010-2011 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 if [ $# != 1 ]; then
     echo usage: "$0" HOST
