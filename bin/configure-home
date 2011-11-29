@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-## configure-home.sh: configure for home directory
+## configure-home: configure for home directory
 
 ## $Revision$
 ## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 ./configure --prefix="$HOME" --exec-prefix="$ARCHHOME" "$@"
