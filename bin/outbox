@@ -5,31 +5,29 @@
 ## $Revision$
 ## Copyright 2010-2011 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 if [ $# -lt 2 ]; then
     echo usage: "$0" DIRNAME FILE...
     exit 2
 fi
 
-YEAR="$(date +%Y)"
-DIRNAME="$YEAR/outbox/$1"
+year="$(date +%Y)"
+dirname="$year/outbox/$1"
 shift
 
-HTTPHOST="$(cat ~/.httphost 2> /dev/null || hostname --long)"
-BASEURL="http://${HTTPHOST}/~${LOGNAME}"
-BASEDIRNAME="$HOME/public_html"
+http_host="$(cat ~/.httphost 2> /dev/null || hostname --long)"
+base_url="http://${http_host}/~${LOGNAME}"
+base_dirname="$HOME/public_html"
 
-for FILENAME in "$@"; do
-    WHOLEDIRNAME="$(dirname "$BASEDIRNAME/$DIRNAME/$FILENAME")"
+for filename in "$@"; do
+    whole_dirname="$(dirname "$base_dirname/$dirname/$filename")"
 
-    mkdir -p "$WHOLEDIRNAME"
-    cp -pr "$FILENAME" "$WHOLEDIRNAME"
+    mkdir -p "$whole_dirname"
+    cp -pr "$filename" "$whole_dirname"
 
-    echo "$BASEURL/$DIRNAME/$FILENAME"
+    echo "$base_url/$dirname/$filename"
 done
 
-chmod a+x "$BASEDIRNAME/$DIRNAME"
-chmod -R a+r "$BASEDIRNAME/$DIRNAME"
+chmod a+x "$base_dirname/$dirname"
+chmod -R a+r "$base_dirname/$dirname"
