@@ -5,15 +5,14 @@
 ## $Revision$
 ## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 if [[ $# != 1 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     echo usage: "$0" COMMAND
+    echo command is one of: remove, start, stop, query
     exit 2
 fi
 
-COMMAND="$1" # start or stop
+command="$1" # start or stop
 
-cygrunsrv --list | xargs -n 1 cygrunsrv -V "--$COMMAND"
+cygrunsrv --list | xargs -n 1 cygrunsrv -V "--$command"
