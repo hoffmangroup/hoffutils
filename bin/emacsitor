@@ -22,7 +22,7 @@ _emacs-x()
     command emacs "$@"
 }
 
-if [[ "${WITHIN_EMACS:-}" || "$TERM" == "eterm-color" ]]; then
+if [[ "${INSIDE_EMACS:-}" || "$TERM" == "eterm-color" ]]; then
     command emacsclient "$@"
 elif [[ "${DISPLAY:$((${#DISPLAY}-2))}" == ":0" || "${DISPLAY:$((${#DISPLAY}-4))}" == ":0.0" ]]; then
     _emacs-x "$@"

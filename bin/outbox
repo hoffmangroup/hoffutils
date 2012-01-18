@@ -3,7 +3,7 @@
 ## outbox: copy files to web outbox
 
 ## $Revision$
-## Copyright 2010-2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2010-2012 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -24,7 +24,7 @@ for filename in "$@"; do
     whole_dirname="$(dirname "$base_dirname/$dirname/$filename")"
 
     mkdir -p "$whole_dirname"
-    cp -pr "$filename" "$whole_dirname"
+    cp --preserve=timestamps -r "$filename" "$whole_dirname"
 
     echo "$base_url/$dirname/$filename"
 done

@@ -2,13 +2,11 @@
 
 # flymake-pyflakes: run PyFlakes; set warnings appropriately
 # $Revision$
-# Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+# Copyright 2010, 2011 Michael M. Hoffman <mmh1@uw.edu>
 
 # usage: flymake-pyflakes
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 # this formulation ensures that you use your current python instead of
 # whatever was installed when pyflakes was installed
