@@ -7,9 +7,10 @@ url: DESCRIPTION
 
 __version__ = "$Revision: 532 $"
 
-# Copyright 2009, 2010, 2011 Michael M. Hoffman <mmh1@washington.edu>
+# Copyright 2009-2012 Michael M. Hoffman <mmh1@washington.edu>
 
 from functools import partial
+from os import environ
 from pwd import getpwall
 from posixpath import islink as _islink, realpath as _realpath
 import posixpath
@@ -104,7 +105,8 @@ def url(*filenames):
     url_text = "\n".join(urls)
 
     print url_text
-    XSEL_PROG(Stdin(url_text), copy=True, selection="CLIPBOARD")
+    if "DISPLAY" in environ:
+        XSEL_PROG(Stdin(url_text), copy=True, selection="CLIPBOARD")
 
 def parse_options(args):
     from optparse import OptionParser
