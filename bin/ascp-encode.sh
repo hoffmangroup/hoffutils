@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-## ascp-encode.sh: sync files from encode-box-01
+## ascp-encode.sh: mirror files from encode-box-01 to noble lab commonData
 
 ## $Revision$
-## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -13,9 +13,14 @@ if [ $# != 1 ]; then
     exit 2
 fi
 
-filename="$1" # must do this one at a time, use xargs -n 1 if you want multiple
+# must have aspera module loaded
 
-[ -f "$HOME/shortcuts/commonData" ] # must exist
+filename="$1" # must do this one at a time, use xargs -n 1 if you want multiple
+dirname=/net/noble/vol3/data/encode/commonData
+
+[ -f "$dirname" ] # this must exist
+
+# $local_dirname might be a child of $dirname
 local_dirname="$(dirname "$HOME/shortcuts/commonData/$filename")"
 
 # -T: no encryption
