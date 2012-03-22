@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -x
+
+exec > ~/mendeley.stdout 2> ~/mendeley.stderr
+
+mendeleydesktop "$@"

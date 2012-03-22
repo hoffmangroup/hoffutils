@@ -3,11 +3,9 @@
 ## release: release new version of Python software
 
 ## $Revision$
-## Copyright 2010-2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2010-2012 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 set -x
 
 if [ $# != 0 ]; then
@@ -72,8 +70,9 @@ tar zxvf "${NAME}-${VERSION}.tar.gz"
 pushd "${NAME}-${VERSION}"
 
 if [ -d "$MODDIR" ]; then
-    install-python-module "$PWD"
-    ssh histidine install-python-module "$PWD"
+    install-python-module "$PWD" # RHEL5/x86_64
+    ssh histidine install-python-module "$PWD" # RHEL5/i686
+    ssh n001 install-python-module "$PWD" # RHEL6/x86_64
 
     ## setup module file
     OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"

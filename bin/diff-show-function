@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+## diff-python: diff and mark Python functions and classes
+
+## $Revision$
+## Copyright 2012 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+if [[ "$*" =~ $'\.py([ \t]|$)' ]]; then
+    exec diff -F '^[ \t]*\(\(class\|def\)[ \t].*\)$' "$@"
+elif [[ "$*" =~ $'\.(c|cc|cpp|cxx|c\+\+|C|h|hh|hpp|hxx|ii|ixx|ipp|inl|txx|tpp|tpl)( |$)' ]]; then
+    exec diff -p "$@"
+else
+    exec diff "$@"
+fi

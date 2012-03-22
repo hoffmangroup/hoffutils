@@ -4,9 +4,7 @@
 # usage: mkresultsdir DESCRIPTION [SCRIPT]
 # to not run an editor just use VISUAL=true mkresultsdir
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
 if [[ $# -lt 1 || $# -gt 2 ]]; then
     echo usage: "$0" DESCRIPTION [SCRIPT]

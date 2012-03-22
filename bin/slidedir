@@ -3,7 +3,7 @@
 ## slidedir: echo slide directory
 
 ## $Revision$
-## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -16,5 +16,7 @@ date="$(date +%Y-%m-%d)"
 dir="/nfs/noble/www/htdocs/internal/slides/current-quarter/$date"
 
 mkdir -p "$dir"
-chmod a+rx,ug+w "$dir" 2>/dev/null
+chmod a+rx,ug+w "$dir" 2>/dev/null \
+    || [ $((0$(stat -c %a "$dir") & 0770)) == $((0770)) ] \
+    || echo -e \n "$dir" not set 0770
 printf %s "$dir"

@@ -18,7 +18,7 @@ fi
 filename="$1" # must do this one at a time, use xargs -n 1 if you want multiple
 dirname=/net/noble/vol3/data/encode/commonData
 
-[ -f "$dirname" ] # this must exist
+[ -d "$dirname" ] # this must exist
 
 # $local_dirname might be a child of $dirname
 local_dirname="$(dirname "$HOME/shortcuts/commonData/$filename")"
