@@ -3,27 +3,24 @@
 ## run this after release
 ## start in a fresh dist/$NAME-$VERSION directory
 
-# XXX: turn robust bash settings on
-
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
+set -x
 
 cd "${1:-.}"
 
-NAME="$(python setup.py --name)"
-VERSION="$(python setup.py --version)"
+name="$(python setup.py --name)"
+version="$(python setup.py --version)"
 
-WWWDIR="/nfs/noble/www/htdocs/proj/$NAME"
-if [ ! -d "$WWWDIR" ]; then
-    WWWDIR="$HOME/public_html/software/$NAME"
-    mkdir -p "$WWWDIR"
+www_dir="/nfs/noble/www/htdocs/proj/$name"
+if [ ! -d "$www_dir" ]; then
+    www_dir="$HOME/public_html/software/$name"
+    mkdir -p "$www_dir"
 fi
 
-SRCDIR="$WWWDIR/src"
-if [ ! -d "$SRCDIR" ]; then
-    SRCDIR="$WWWDIR"
-    mkdir -p "$SRCDIR"
+src_dir="$www_dir/src"
+if [ ! -d "$src_dir" ]; then
+    src_dir="$www_dir"
+    mkdir -p "$src_dir"
 fi
 
 ship-doc
@@ -35,9 +32,9 @@ python setup.py release register upload
 ### XXX: everything from here on must change for install at EBI
 
 # copy software
-cp -v "dist/$NAME-$VERSION.tar.gz" \
-    "dist/$NAME-$VERSION-py$PYTHON_VERSION"*.egg "$SRCDIR"
+cp -v "dist/$name-$version.tar.gz" \
+    "dist/$name-$version-py$PYTHON_VERSION"*.egg "$src_dir"
 
-cp -v install.py "$WWWDIR" || echo >&2 "no install.py"
+cp -v install.py "$www_dir" || echo >&2 "no install.py"
 
-emacsclient-top "$WWWDIR/index.html"
+emacsclient-top "$www_dir/index.html"
