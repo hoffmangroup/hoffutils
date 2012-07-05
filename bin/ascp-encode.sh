@@ -21,7 +21,8 @@ dirname=/net/noble/vol3/data/encode/commonData
 [ -d "$dirname" ] # this must exist
 
 # $local_dirname might be a child of $dirname
-local_dirname="$(dirname "$HOME/shortcuts/commonData/$filename")"
+local_filename="$dirname/$filename"
+local_dirname="$(dirname "$local_filename")"
 
 # -T: no encryption
 # -k 3: don't resend identical files
@@ -41,3 +42,5 @@ fi
 # echo is so output isn't eaten by ssh
 $maybe_ssh bash -c \
     "echo; ASPERA_SCP_PASS=enc*deDOWN ascp -TQdp -k 3 -l 400M \"encode-box-01@fasp.encode.ebi.ac.uk:$filename\" \"$local_dirname\""
+
+chmod --silent --recursive ug+rw "$local_filename"

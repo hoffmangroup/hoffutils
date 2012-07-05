@@ -3,32 +3,29 @@
 ## mktexdir.sh: make a directory with TeX stuff in it
 
 ## $Revision$
-## Copyright 2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
-set -x
+set -o nounset -o pipefail -o errexit -x
 
 if [ $# != 1 ]; then
     echo usage: "$0" DIRNAME
     exit 2
 fi
 
-SRCDIR="$(dirname "$BASH_SOURCE")"
-TEXDIR="$SRCDIR/../tex"
-DIR="$1"
+srcdir="$(dirname "$BASH_SOURCE")"
+texdir="$srcdir/../tex"
+dir="$1"
 
-REALDIR="${DIR%%.manuscript}"
-REPO="file:///net/noble/vol1/svn/$DIR/trunk"
+realdir="${dir%%.manuscript}"
+REPO="file:///net/noble/vol1/svn/$dir/trunk"
 
 svn mkdir --parents -m "new manuscript" "$REPO"
-svn co "$REPO" "$REALDIR"
+svn co "$REPO" "$realdir"
 
-command cd "$REALDIR"
+command cd "$realdir"
 
-svn propset --file "$TEXDIR/ignore.txt" svn:ignore .
-cp "$TEXDIR"/{manuscript,hypersetup,abstract,article,title}.tex .
+svn propset --file "$texdir/ignore.txt" svn:ignore .
+cp "$texdir"/{manuscript,hypersetup,abstract,article,title}.tex .
 
 svn add {manuscript,hypersetup,abstract,article,title}.tex
 svn commit -m "initial checkout from template"

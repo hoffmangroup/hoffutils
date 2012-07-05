@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+## pushpull: hg push, then pull
+
+## $Revision$
+## Copyright 2012 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+if [[ $# != 1 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0" HOST
+    exit 2
+fi
+
+home2=/net/noble/vol4/noble/user/mmh1
+
+pushd "$(hg root)"
+
+dirname=${PWD/$HOME/'~'}
+dirname=${dirname/$home2/'~'}
+
+if [ "${REVERSE:-}" ]; then
+    XXX
+else
+    hg push
+    ssh "$1" "hg pull -u -R $dirname"
+fi
+
+popd

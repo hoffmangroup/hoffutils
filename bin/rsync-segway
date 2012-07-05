@@ -3,7 +3,7 @@
 ## rsync-segway.sh: rsync directories excluding big Segway data files
 
 ## $Revision$
-## Copyright 2010-2011 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2010-2012 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -12,13 +12,18 @@ if [[ $# == 0 ]]; then
     exit 2
 fi
 
-OPTIONS=(-rtvz --links --exclude output --exclude posterior --exclude viterbi
+options=(-rtvz --links --exclude output --exclude posterior --exclude viterbi
     --exclude observations --exclude "*.observations" --exclude accumulators)
 
-REMOTE_DIR=$1:${PWD/$HOME/'~'}/
+home2=/net/noble/vol4/noble/user/mmh1
+
+dirname=${PWD/$HOME/'~'}
+dirname=${dirname/$home2/'~'}
+
+remote_dir="$1:${dirname}/"
 
 if [ "${REVERSE:-}" ]; then
-    rsync "${OPTIONS[@]}" . "$REMOTE_DIR"
+    rsync "${options[@]}" . "$remote_dir"
 else
-    rsync "${OPTIONS[@]}" "$REMOTE_DIR" .
+    rsync "${options[@]}" "$remote_dir" .
 fi
