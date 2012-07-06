@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -o nounset -o errexit -o pipefail -x
+set -o nounset -o errexit -o pipefail
 
 bin_filename="$(which --all R | fgrep -v "$0")"
 
