@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-set -o nounset -o errexit -o pipefail
+set -o nounset -o errexit -o pipefail -x
 
 bin_filename="$(which --all R | fgrep -v "$0")"
 
-"${bin_filename}" $(echo "$@" | perl -pe 's/ ?--no-readline//g')
+"${bin_filename}" --ess $(echo "$@" | perl -pe 's/ ?--no-readline//g')
