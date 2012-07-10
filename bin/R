@@ -4,4 +4,4 @@ set -o nounset -o errexit -o pipefail
 
 bin_filename="$(which --all R | fgrep -v "$0")"
 
-"${bin_filename}" --ess $(echo "$@" | perl -pe 's/ ?--no-readline//g')
+"${bin_filename}" $(echo "$@" | sed -re 's/ ?--no-readline//g')
