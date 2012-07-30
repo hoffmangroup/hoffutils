@@ -5,8 +5,7 @@
 ## $Revision$
 ## Copyright 2010-2012 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset -o pipefail -o errexit
-set -x
+set -o nounset -o pipefail -o errexit -x
 
 if [ $# != 0 ]; then
     echo usage: "$0"
@@ -14,28 +13,28 @@ if [ $# != 0 ]; then
 fi
 
 # acquire information
-TRUNK_URL="$(svnurl)"
-REPO="${TRUNK_URL%/trunk}"
+trunk_url="$(svnurl)"
+repo="${trunk_url%/trunk}"
 
-[ "$REPO" != "$TRUNK_URL" ]
+[ "$repo" != "$trunk_url" ]
 
-NAME="$(python setup.py --name)"
-VERSION="$(python setup.py --version)"
-MODDIR="/net/noble/vol1/software/modules/${NAME}"
+name="$(python setup.py --name)"
+version="$(python setup.py --version)"
+module_dir="/net/noble/vol1/software/modules/${name}"
 
 if [ -e install.py ]; then
-    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$VERSION\"/" \
+    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$version\"/" \
         install.py install.tmpl
 fi
 
 svn commit
 
-TAG_URL="$REPO/tags/release-$VERSION"
+tag_url="$repo/tags/release-$version"
 
-if svn ls "$TAG_URL" 2>/dev/null; then
-    svn rm -m "brownbag" "$TAG_URL"
+if svn ls "$tag_url" 2>/dev/null; then
+    svn rm -m "brownbag" "$tag_url"
 fi
-svn cp . "$TAG_URL" -m "tagging release $VERSION"
+svn cp . "$tag_url" -m "tagging release $version"
 
 # build docs
 if [ -d doc ]; then
@@ -46,42 +45,42 @@ fi
 # make release source
 python setup.py release # alias for egg_info --no-svn-revision --tag-build '' sdist bdist_egg
 
-echo "Current version is $VERSION"
+echo "Current version is $version"
 echo "What is the new version?"
 
-read NEXTVERSION
+read next_version
 
-perl -i~ -pe "s/__version__ = \".*\"/__version__ = \"$NEXTVERSION\"/" \
+perl -i~ -pe "s/__version__ = \".*\"/__version__ = \"$next_version\"/" \
     setup.py
 
 if [ -e install.py ]; then
-    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$NEXTVERSION\"/" \
+    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$next_version\"/" \
         install.py install.tmpl
 fi
 
 mv NEWS NEWS~ 2>&1 || touch NEWS~
-echo -e "$NEXTVERSION:\n\n\n" | cat - NEWS~ > NEWS
+echo -e "$next_version:\n\n\n" | cat - NEWS~ > NEWS
 
 svn commit -m "increment release"
 
 # install
 pushd dist
-tar zxvf "${NAME}-${VERSION}.tar.gz"
-pushd "${NAME}-${VERSION}"
+tar zxvf "${name}-${version}.tar.gz"
+pushd "${name}-${version}"
 
-if [ -d "$MODDIR" ]; then
-    install-python-module "$PWD" # RHEL5/x86_64
-    ssh histidine install-python-module "$PWD" # RHEL5/i686
-    ssh n001 install-python-module "$PWD" # RHEL6/x86_64
+if [ -d "$module_dir" ]; then
+    install-python-module "$PWD" # RHEL6/x86_64
+    ssh serine install-python-module "$PWD" # RHEL5/x86_64
+    ssh threonine install-python-module "$PWD" # RHEL5/i686
 
     ## setup module file
-    OLDVERSION="$(ls -1 "$MODDIR" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
+    old_version="$(ls -1 "$module_dir" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
 
-    perl -pe "s/^(set.*_VERSION.*)$OLDVERSION/\${1}$VERSION/g" "$MODDIR/$OLDVERSION" > "$MODDIR/$VERSION"
+    perl -pe "s/^(set.*_VERSION.*)$old_version/\${1}$version/g" "$module_dir/$old_version" > "$module_dir/$version"
 else
-    mkdir -p "$MODDIR"
+    mkdir -p "$module_dir"
     echo "module file does not exist" >&2
-    "$VISUAL" "$MODDIR/$VERSION"
+    "$VISUAL" "$module_dir/$version"
 fi
 
 echo "to ship: ship $PWD"

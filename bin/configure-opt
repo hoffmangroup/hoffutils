@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+## configure-home: configure for home directory
+
+## $Revision$
+## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+dir="${1:-$(basename "$PWD")}"
+shift
+
+./configure --prefix="$HOME/opt/$dir" --exec-prefix="$ARCHHOME/opt/$dir" "$@"
