@@ -2,6 +2,6 @@
 
 set -o nounset -o errexit -o pipefail
 
-bin_filename="$(which --all R | fgrep -v "$0")"
+bin_filename="$(which --all R | fgrep -v "$0" | head -n 1)"
 
-"${bin_filename}" $(echo "$@" | sed -re 's/ ?--no-readline//g')
+exec "${bin_filename}" $(echo "$@" | sed -re 's/ ?--no-readline//g')

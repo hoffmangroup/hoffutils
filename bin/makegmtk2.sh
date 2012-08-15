@@ -16,14 +16,19 @@ fi
 dir="${1:-$HOME/src/collab/gmtk}" # . for current dir
 
 NEW="${NEW:-}"
+MODULE="${MODULE:-}"
 NCPUS="${NCPUS:-$(grep -c "^processor" /proc/cpuinfo)}"
+
+module_root=/net/noble/vol1/software/modules-sw
+module_triple="$MODULES_OS/$MODULES_REL/$MODULES_MACH"
+configureflags=(--with-logp=table --with-LZERO=-1.0E20)
 
 # tuned for n017-n022 but should run on n001
 # use qconf -sel | cat &lt;(hostname) - | xargs -n 1 -i bash -c 'ssh -o "StrictHostKeyChecking no" "{}" "echo -n "\$HOSTNAME "; gcc -march=native -E -v - </dev/null 2>&1 | fgrep cc1" || true'
 # to get options, find intersection
 # OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mcx16 -msahf -mno-movbe -mno-lwp -mno-fma -mno-fma4 -mno-xop -mno-bmi -mno-tbm -mno-avx --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=12288 -mtune=corei7}"
 
-OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=12288 -mtune=corei7}"
+OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mtune=generic}"
 
 DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
 CFLAGS=-pipe
@@ -45,9 +50,16 @@ if [ "$NEW" ]; then
     autoreconf -i
 fi
 
-# XXX: remove --with-LZERO after trunk gets merged back into ticket156
+# XXX: remove --with-LZERO after trunk gets merged back into ticket161
 # (default of -1.0E17)
-configure-home --with-logp=table --with-LZERO=-1.0E20
+if [ "$MODULE" ]; then
+    module_version="$(hg id --branch)-$(hg id --id)"
+    prefix="$module_root/gmtk/$module_version/$module_triple"
+    ./configure --prefix="$prefix" "${configureflags[@]}"
+else
+    configure-home "${configureflags[@]}"
+fi
+
 make "${MAKEFLAGS[@]}"
 #make "${MAKEFLAGS[@]}" check # disabled until bugs fixed
 make "${MAKEFLAGS[@]}" install
