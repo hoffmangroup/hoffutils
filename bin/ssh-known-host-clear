@@ -4,20 +4,23 @@
 # known_hosts file
 #
 # $Revision$
-# Copyright 2010 Michael M. Hoffman <mmh1@uw.edu>
+# Copyright 2010, 2012 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset
-set -o pipefail
-set -o errexit
+set -o nounset -o pipefail -o errexit
 
-WORDS=($(ssh "$1" exit 2>&1 \
-    | perl -ne "chomp; print if s/^Offending key in ([^:]+):(\d+)\r/\1 \2/" \
+if [[ $# != 1 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0" HOST
+    exit 2
+fi
+
+words=($(ssh "$1" exit 2>&1 \
+    | perl -ne "chomp; print if s/^Offending (?:RSA )?key in ([^:]+):(\d+)\r/\1 \2/" \
     || true))
 
-KNOWNHOSTSFILE="${WORDS[0]}"
-LINE="${WORDS[1]}"
+known_hosts_file="${words[0]}"
+line="${words[1]}"
 
-mv "$KNOWNHOSTSFILE" "${KNOWNHOSTSFILE}~"
+mv "$known_hosts_file" "${known_hosts_file}~"
 
-head -n $((LINE-1)) "${KNOWNHOSTSFILE}~" \
-    | cat - <(tail -n +$((LINE+1)) "${KNOWNHOSTSFILE}~") > "$KNOWNHOSTSFILE"
+head -n $((line-1)) "${known_hosts_file}~" \
+    | cat - <(tail -n +$((line+1)) "${known_hosts_file}~") > "$known_hosts_file"
