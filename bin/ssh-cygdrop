@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+## ssh-cygdrop: drop privileges while running under ssh
+## master copy in ~/etc/bin/ssh-cygdrop
+
+## $Revision$
+## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset pipefail errexit
+
+# XXX: this doesn't do a bunch of things that would be done normally by sshd
+# like running sshrc or ~/.ssh/rc or running xauth.
+
+if [ "${SSH_ORIGINAL_COMMAND:-}" ]; then
+    command=(bash -c "$SSH_ORIGINAL_COMMAND")
+    declare -p command # XXX: debugging until autoscreen works
+else
+    command=("$SHELL")
+fi
+
+exec cygdrop "${command[@]}"
