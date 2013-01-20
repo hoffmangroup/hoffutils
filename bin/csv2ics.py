@@ -47,7 +47,12 @@ def get_date(row):
 def get_time(row, fieldname):
     text = row[fieldname]
 
-    return datetime.strptime(text, "%I:%M:%S %p").time()
+    try:
+        res = datetime.strptime(text, "%I:%M:%S %p")
+    except ValueError:
+        res = datetime.strptime(text, "%H:%M")
+
+    return res.time()
 
 def get_dt(date, time):
     return datetime.combine(date, time).strftime("%Y%m%dT%H%M%S")
@@ -82,7 +87,7 @@ def write_events(rows):
         dtend = get_dtend(row, next_row)
         location = row["location"]
         summary = row["description"]
-        description = row["notes"]
+        description = row.get("notes", "")
 
         uid = make_uid(dtstart, dtend, location, summary, description)
 
