@@ -99,7 +99,6 @@ def write_events(rows):
         print_field("SUMMARY", summary)
         print_field("DESCRIPTION", description)
         print_alarm("-P0DT0H5M0S")
-        print_alarm("-P0DT0H10M0S")
         print_field("END", "VEVENT")
 
 def csv2ics(filename):
