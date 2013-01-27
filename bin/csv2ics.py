@@ -2,11 +2,14 @@
 from __future__ import division, print_function
 
 """csv2ics.py: convert CSV agenda to iCalendar format
-"""
 
-## TODO:
-##
-## deal with timezones appropriately
+requires pytz
+
+timezone can be anything supported by pytz, such as "EST" or "US/Eastern"
+
+if you don't specify a timezone, times will not be converted. Google
+Calendar imports these times in your current local Google Calendar time
+"""
 
 __version__ = "$Revision$"
 
@@ -16,6 +19,8 @@ from csv import DictReader
 from datetime import date, datetime
 from hashlib import sha256
 import sys
+
+from pytz import timezone, utc
 
 YEAR_DEFAULT = 1900
 
@@ -46,24 +51,37 @@ def get_date(row):
 
 def get_time(row, fieldname):
     text = row[fieldname]
+    text = text.upper()
+    text = text.replace("A.M.", "AM")
+    text = text.replace("P.M.", "PM")
 
     try:
-        res = datetime.strptime(text, "%I:%M:%S %p")
+        dt = datetime.strptime(text, "%I:%M:%S %p")
     except ValueError:
-        res = datetime.strptime(text, "%H:%M")
+        try:
+            dt = datetime.strptime(text, "%I:%M %p")
+        except ValueError:
+            dt = datetime.strptime(text, "%H:%M")
 
-    return res.time()
+    return dt.time()
 
-def get_dt(date, time):
-    return datetime.combine(date, time).strftime("%Y%m%dT%H%M%S")
+def get_dt(date, time, tz):
+    dt = datetime.combine(date, time)
+    fmt = "%Y%m%dT%H%M%S"
 
-def get_dtstart(row):
+    if tz:
+        dt = tz.localize(dt).astimezone(utc)
+        fmt += "Z"
+
+    return dt.strftime(fmt)
+
+def get_dtstart(row, tz):
     row_date = get_date(row)
     row_time = get_time(row, "time")
 
-    return get_dt(row_date, row_time)
+    return get_dt(row_date, row_time, tz)
 
-def get_dtend(row, next_row):
+def get_dtend(row, next_row, tz):
     row_date = get_date(row)
 
     if row["end_time"]:
@@ -71,20 +89,23 @@ def get_dtend(row, next_row):
     else:
         row_time = get_time(next_row, "time")
 
-    return get_dt(row_date, row_time)
+    return get_dt(row_date, row_time, tz)
 
 def make_uid(*texts):
     return sha256("\0".join(texts)).hexdigest()
 
-def write_events(rows):
+def write_events(rows, tz):
+    if tz:
+        tz = timezone(tz)
+
     for row_index, row in enumerate(rows):
         try:
             next_row = rows[row_index+1]
         except IndexError:
             next_row = None
 
-        dtstart = get_dtstart(row)
-        dtend = get_dtend(row, next_row)
+        dtstart = get_dtstart(row, tz)
+        dtend = get_dtend(row, next_row, tz)
         location = row["location"]
         summary = row["description"]
         description = row.get("notes", "")
@@ -98,10 +119,10 @@ def write_events(rows):
         print_field("LOCATION", location)
         print_field("SUMMARY", summary)
         print_field("DESCRIPTION", description)
-        print_alarm("-P0DT0H5M0S")
+        print_alarm("-P0DT0H10M0S")
         print_field("END", "VEVENT")
 
-def csv2ics(filename):
+def csv2ics(filename, tz=None):
     print_field("BEGIN", "VCALENDAR")
 
     with open(filename) as infile:
@@ -109,7 +130,7 @@ def csv2ics(filename):
         reader.fieldnames = [transform_fieldname(name)
                              for name in reader.fieldnames]
         rows = [row for row in reader]
-        write_events(rows)
+        write_events(rows, tz)
 
     print_field("END", "VCALENDAR")
 
@@ -119,6 +140,8 @@ def parse_options(args):
     usage = "%prog [OPTION]... FILE"
     version = "%%prog %s" % __version__
     parser = OptionParser(usage=usage, version=version)
+    parser.add_option("-t", "--timezone", metavar="TZ", help="use timezone TZ"
+                      " (default: no timezone)")
 
     options, args = parser.parse_args(args)
 
@@ -130,7 +153,7 @@ def parse_options(args):
 def main(args=sys.argv[1:]):
     options, args = parse_options(args)
 
-    return csv2ics(*args)
+    return csv2ics(*args, tz=options.timezone)
 
 if __name__ == "__main__":
     sys.exit(main())
