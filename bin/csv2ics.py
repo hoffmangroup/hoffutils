@@ -40,8 +40,13 @@ def transform_fieldname(name):
     res = res.replace(" ", "_")
     return res
 
-def get_date(row):
-    res = datetime.strptime(row["date"], "%d-%b").date()
+def get_date(row, last_date):
+    row_date = row["date"]
+
+    if not row_date:
+        return last_date # continue with date from previous row
+
+    res = datetime.strptime(row_date, "%d-%b").date()
 
     if res.year == YEAR_DEFAULT:
         today_year = date.today().year
@@ -75,21 +80,18 @@ def get_dt(date, time, tz):
 
     return dt.strftime(fmt)
 
-def get_dtstart(row, tz):
-    row_date = get_date(row)
+def get_dtstart(row, date, tz):
     row_time = get_time(row, "time")
 
-    return get_dt(row_date, row_time, tz)
+    return get_dt(date, row_time, tz)
 
-def get_dtend(row, next_row, tz):
-    row_date = get_date(row)
-
+def get_dtend(row, next_row, date, tz):
     if row["end_time"]:
         row_time = get_time(row, "end_time")
     else:
         row_time = get_time(next_row, "time")
 
-    return get_dt(row_date, row_time, tz)
+    return get_dt(date, row_time, tz)
 
 def make_uid(*texts):
     return sha256("\0".join(texts)).hexdigest()
@@ -98,14 +100,17 @@ def write_events(rows, tz):
     if tz:
         tz = timezone(tz)
 
+    date = None
+
     for row_index, row in enumerate(rows):
         try:
             next_row = rows[row_index+1]
         except IndexError:
             next_row = None
 
-        dtstart = get_dtstart(row, tz)
-        dtend = get_dtend(row, next_row, tz)
+        date = get_date(row, date)
+        dtstart = get_dtstart(row, date, tz)
+        dtend = get_dtend(row, next_row, date, tz)
         location = row["location"]
         summary = row["description"]
         description = row.get("notes", "")
