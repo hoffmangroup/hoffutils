@@ -66,7 +66,10 @@ def get_time(row, fieldname):
         try:
             dt = datetime.strptime(text, "%I:%M %p")
         except ValueError:
-            dt = datetime.strptime(text, "%H:%M")
+            try:
+                dt = datetime.strptime(text, "%I:%M%p")
+            except ValueError:
+                dt = datetime.strptime(text, "%H:%M")
 
     return dt.time()
 
