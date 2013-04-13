@@ -46,7 +46,12 @@ def get_date(row, last_date):
     if not row_date:
         return last_date # continue with date from previous row
 
-    res = datetime.strptime(row_date, "%d-%b").date()
+    try:
+        dt = datetime.strptime(row_date, "%d-%b")
+    except ValueError:
+        dt = datetime.strptime(row_date, "%m/%d/%Y")
+
+    res = dt.date()
 
     if res.year == YEAR_DEFAULT:
         today_year = date.today().year
