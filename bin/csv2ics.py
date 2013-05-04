@@ -74,7 +74,10 @@ def get_time(row, fieldname):
             try:
                 dt = datetime.strptime(text, "%I:%M%p")
             except ValueError:
-                dt = datetime.strptime(text, "%H:%M")
+                try:
+                    dt = datetime.strptime(text, "%H:%M")
+                except ValueError:
+                    dt = datetime.strptime(text, "%I%p")
 
     return dt.time()
 
@@ -121,7 +124,10 @@ def write_events(rows, tz):
         dtend = get_dtend(row, next_row, date, tz)
         location = row["location"]
         summary = row["description"]
-        description = row.get("notes", "")
+        try:
+            description = row["notes"]
+        except KeyError:
+            description = row.get("note", "")
 
         uid = make_uid(dtstart, dtend, location, summary, description)
 
