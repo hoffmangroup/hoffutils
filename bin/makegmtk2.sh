@@ -3,7 +3,7 @@
 ## makegmtk2.sh: make new GMTK
 
 ## $Revision$
-## Copyright 2011, 2012 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2011, 2012, 2013 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit -x
 
@@ -61,5 +61,5 @@ else
 fi
 
 make "${MAKEFLAGS[@]}"
-#make "${MAKEFLAGS[@]}" check # disabled until bugs fixed
+make "${MAKEFLAGS[@]}" check
 make "${MAKEFLAGS[@]}" install
