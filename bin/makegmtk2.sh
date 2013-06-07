@@ -58,7 +58,11 @@ if [ "$MODULE" ]; then
     prefix="$module_root/gmtk/$module_version/$module_triple"
     ./configure --prefix="$prefix" "${configureflags[@]}"
 else
-    configure-home "${configureflags[@]}"
+    if ! (./config.status --config | fgrep -- "'--prefix=$HOME'" \
+          | fgrep -- "'--exec-prefix=$ARCHHOME'"); then
+        configure --prefix="$HOME" --exec-prefix="$ARCH_HOME" \
+            "${configureflags[@]}"
+    fi
 fi
 
 make "${MAKEFLAGS[@]}"
