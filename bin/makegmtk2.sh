@@ -20,7 +20,9 @@ MODULE="${MODULE:-}"
 NCPUS="${NCPUS:-$(grep -c "^processor" /proc/cpuinfo)}"
 
 module_root=/net/noble/vol1/software/modules-sw
-module_triple="$MODULES_OS/$MODULES_REL/$MODULES_MACH"
+
+# XXX: remove --with-LZERO after trunk gets merged back into ticket161
+# (default of -1.0E17)
 configureflags=(--with-logp=table --with-LZERO=-1.0E20)
 
 # tuned for n017-n022 but should run on n001
@@ -50,10 +52,9 @@ if [ "$NEW" ]; then
     autoreconf -i
 fi
 
-# XXX: remove --with-LZERO after trunk gets merged back into ticket161
-# (default of -1.0E17)
 if [ "$MODULE" ]; then
     module_version="$(hg id --branch)-$(hg id --id)"
+    module_triple="$MODULES_OS/$MODULES_REL/$MODULES_MACH"
     prefix="$module_root/gmtk/$module_version/$module_triple"
     ./configure --prefix="$prefix" "${configureflags[@]}"
 else
