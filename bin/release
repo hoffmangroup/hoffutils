@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-## release: release new version of Python software
+## release: release new version of Python software, change version number
 
 ## $Revision$
-## Copyright 2010-2012 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2010-2013 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit -x
 
@@ -12,22 +12,9 @@ if [ $# != 0 ]; then
     exit 2
 fi
 
-# acquire information
-trunk_url="$(svnurl)"
-repo="${trunk_url%/trunk}"
+prep-release
 
-[ "$repo" != "$trunk_url" ]
-
-name="$(python setup.py --name)"
-version="$(python setup.py --version)"
-module_dir="/net/noble/vol1/software/modules/${name}"
-
-if [ -e install.py ]; then
-    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$version\"/" \
-        install.py install.tmpl
-fi
-
-svn commit
+. repo-info
 
 tag_url="$repo/tags/release-$version"
 
@@ -35,15 +22,6 @@ if svn ls "$tag_url" 2>/dev/null; then
     svn rm -m "brownbag" "$tag_url"
 fi
 svn cp . "$tag_url" -m "tagging release $version"
-
-# build docs
-if [ -d doc ]; then
-    pushd doc && (make html latexpdf man && evince _build/latex/*.pdf)
-    popd
-fi
-
-# make release source
-python setup.py release # alias for egg_info --no-svn-revision --tag-build '' sdist bdist_egg
 
 echo "Current version is $version"
 echo "What is the new version?"
@@ -62,25 +40,5 @@ mv NEWS NEWS~ 2>&1 || touch NEWS~
 echo -e "$next_version:\n\n\n" | cat - NEWS~ > NEWS
 
 svn commit -m "increment release"
-
-# install
-pushd dist
-tar zxvf "${name}-${version}.tar.gz"
-pushd "${name}-${version}"
-
-if [ -d "$module_dir" ]; then
-    install-python-module "$PWD" # RHEL6/x86_64
-    XXX ssh serine install-python-module "$PWD" # RHEL5/x86_64
-    ssh threonine install-python-module "$PWD" # RHEL5/i686
-
-    ## setup module file
-    old_version="$(ls -1 "$module_dir" | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
-
-    perl -pe "s/^(set.*_VERSION.*)$old_version/\${1}$version/g" "$module_dir/$old_version" > "$module_dir/$version"
-else
-    mkdir -p "$module_dir"
-    echo "module file does not exist" >&2
-    "$VISUAL" "$module_dir/$version"
-fi
 
 echo "to ship: ship $PWD"

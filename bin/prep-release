@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+## prep-release: prepare to release new version of Python software
+##
+## don't do anything that commits us to the next version
+
+## $Revision$
+## Copyright 2010-2013 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit -x
+
+if [ $# != 0 ]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+. repo-info
+
+module_dir="/net/noble/vol1/software/modules/${name}"
+
+if [ -e install.py ]; then
+    perl -i~ -pe "s/PKG_VERSION = \".*\"/PKG_VERSION = \"$version\"/" \
+        install.py install.tmpl
+fi
+
+svn commit
+
+## build docs
+if [ -d doc ]; then
+    pushd doc && (make SPHINXOPTS=-W linkcheck html latexpdf man \
+        && evince _build/latex/*.pdf)
+    popd
+fi
+
+## make release source
+# alias for egg_info --no-svn-revision --tag-build '' sdist bdist_egg
+python setup.py release
+
+## install
+pushd dist
+tar zxvf "${name}-${version}.tar.gz"
+pushd "${name}-${version}"
+
+if [ -d "$module_dir" ]; then
+    install-python-module "$PWD" # RHEL6/x86_64
+    ssh arginine install-python-module "$PWD" # RHEL5/x86_64
+    ssh threonine install-python-module "$PWD" # RHEL5/i686
+
+    ## setup module file
+    module_file="$module_dir/version"
+    if [[ "${CLOBBER:-}" || ! -s "$module_file" ]]; then
+        old_version="$(ls -1 "$module_dir" \
+                       | sort -t . -k 1,1n -k 2,2n -k 3,3n | tail -n 1)"
+        perl -pe "s/^(set.*_VERSION.*)$old_version/\${1}$version/g" \
+            "$module_dir/$old_version" > "$module_file"
+    fi
+else
+    mkdir -p "$module_dir"
+    echo "module file does not exist" >&2
+    "$VISUAL" "$module_dir/$version"
+fi
+
+echo "release prepared"
+echo "potentially use pip uninstall $name if you have it installed locally"
+echo "test yourself"
+echo "email other users to test"
