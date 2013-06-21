@@ -43,7 +43,6 @@ pushd "${name}-${version}"
 
 if [ -d "$module_dir" ]; then
     install-python-module "$PWD" # RHEL6/x86_64
-    ssh arginine install-python-module "$PWD" # RHEL5/x86_64
     ssh threonine install-python-module "$PWD" # RHEL5/i686
 
     ## setup module file
