@@ -60,7 +60,7 @@ if [ "$MODULE" ]; then
 else
     if ! (./config.status --config | fgrep -- "'--prefix=$HOME'" \
           | fgrep -- "'--exec-prefix=$ARCHHOME'"); then
-        configure --prefix="$HOME" --exec-prefix="$ARCH_HOME" \
+        ./configure --prefix="$HOME" --exec-prefix="$ARCHHOME" \
             "${configureflags[@]}"
     fi
 fi
