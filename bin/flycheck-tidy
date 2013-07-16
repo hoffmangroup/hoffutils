@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# flycheck-tidy: run tidy but exclude some things
+# $Revision$
+# Copyright 2010, 2011, 2013 Michael M. Hoffman <mmh1@uw.edu>
+
+# usage: flymake-pyflakes
+
+# set -o nounset -o pipefail -o errexit
+
+tidy "$@" 2>&1 | egrep -v "^line [0-9]+ column [0-9]+ - Warning: .* proprietary attribute"
+
+true
+
