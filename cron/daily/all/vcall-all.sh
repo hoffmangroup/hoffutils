@@ -12,4 +12,5 @@ if [[ $# != 0 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     exit 2
 fi
 
-vcall status ~/src ~/etc ~/jobs/2011 ~/jobs/2012 ~/jobs/statements
+vcall status ~/src ~/etc ~/jobs/2011 ~/jobs/2012 ~/jobs/statements \
+    ~/public_html
