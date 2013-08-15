@@ -34,7 +34,7 @@ OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mtune=generic}"
 
 DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
 CFLAGS=-pipe
-CXXFLAGS="$CFLAGS"
+CXXFLAGS="$CFLAGS --std=c++0x"
 MAKEFLAGS=(-j $(((NCPUS > 1) ? NCPUS-1 : 1)) "CFLAGS=$CFLAGS"
     "CXXFLAGS=$CXXFLAGS" "OPTFLAGS=$OPTFLAGS" "DEBUGFLAGS=$DEBUGFLAGS")
 
@@ -47,7 +47,7 @@ if [ "$NEW" ]; then
     make $MAKEFLAGS distclean || true
     hg pull -u || true # get the latest changes
     if [ -d "$TEST_AND_DEV" ]; then
-        svn up "$TEST_AND_DEV"
+        svn up "$TEST_AND_DEV" || true
     fi
     autoreconf -i
 fi
