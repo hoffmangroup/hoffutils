@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+## uninterruptable.sh: find hosts in uniterruptable sleep
+
+## $Revision$
+## Copyright 2013 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+if [[ $# != 0 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+qconf -sel \
+    | xargs -n 1 -P 0 -i bash -c \
+    'ssh -o "StrictHostKeyChecking no" "{}" "echo -e \"===\${HOSTNAME}===\\\\n\$(top -b -n 1 | fgrep D)\"" || true'
