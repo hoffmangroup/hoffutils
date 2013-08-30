@@ -5,7 +5,7 @@
 ## $Revision$
 ## Copyright 2011, 2012, 2013 Michael M. Hoffman <mmh1@uw.edu>
 
-set -o nounset -o pipefail -o errexit -x
+set -o nounset -o pipefail -o errexit
 
 if [ $# != 0 ]; then
     echo usage: "$0" [DIR]
@@ -21,14 +21,7 @@ NCPUS="${NCPUS:-$(grep -c "^processor" /proc/cpuinfo)}"
 
 module_root=/net/noble/vol1/software/modules-sw
 
-# XXX: remove --with-LZERO after trunk gets merged back into ticket161
-# (default of -1.0E17)
-configureflags=(--with-logp=table --with-LZERO=-1.0E20)
-
-# tuned for n017-n022 but should run on n001
-# use qconf -sel | cat &lt;(hostname) - | xargs -n 1 -i bash -c 'ssh -o "StrictHostKeyChecking no" "{}" "echo -n "\$HOSTNAME "; gcc -march=native -E -v - </dev/null 2>&1 | fgrep cc1" || true'
-# to get options, find intersection
-# OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mcx16 -msahf -mno-movbe -mno-lwp -mno-fma -mno-fma4 -mno-xop -mno-bmi -mno-tbm -mno-avx --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=12288 -mtune=corei7}"
+configureflags=(--with-logp=table)
 
 OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mtune=generic}"
 
