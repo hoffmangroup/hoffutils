@@ -7,7 +7,7 @@
 
 set -o nounset -o pipefail -o errexit
 
-if [ $# != 0 ]; then
+if [[ $# > 1 ]]; then
     echo usage: "$0" [DIR]
     echo DIR is the location of the GMTK source
     exit 2
@@ -27,7 +27,7 @@ OPTFLAGS="${OPTFLAGS:--O3 -march=x86-64 -mtune=generic}"
 
 DEBUGFLAGS="${DEBUGFLAGS:--ggdb3}"
 CFLAGS=-pipe
-CXXFLAGS="$CFLAGS"
+CXXFLAGS="$CFLAGS --std=c++0x"
 MAKEFLAGS=(-j $(((NCPUS > 1) ? NCPUS-1 : 1)) "CFLAGS=$CFLAGS"
     "CXXFLAGS=$CXXFLAGS" "OPTFLAGS=$OPTFLAGS" "DEBUGFLAGS=$DEBUGFLAGS")
 
