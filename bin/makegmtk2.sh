@@ -17,6 +17,7 @@ dir="${1:-$HOME/src/collab/gmtk}" # . for current dir
 
 NEW="${NEW:-}"
 MODULE="${MODULE:-}"
+NOCHECK="${NOCHECK:-}"
 NCPUS="${NCPUS:-$(grep -c "^processor" /proc/cpuinfo)}"
 
 module_root=/net/noble/vol1/software/modules-sw
@@ -59,5 +60,9 @@ else
 fi
 
 make "${MAKEFLAGS[@]}"
-make "${MAKEFLAGS[@]}" check
+
+if [ ! "$NOCHECK" ]; then
+    make "${MAKEFLAGS[@]}" check
+fi
+
 make "${MAKEFLAGS[@]}" install
