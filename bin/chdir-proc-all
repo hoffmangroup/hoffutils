@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+## chdir-proc-all: change working directory of all processes of one name
+
+## $Revision$
+## Copyright 2013 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+if [[ $# != 2 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0" NAME DIR
+    exit 2
+fi
+
+name="$1"
+dir="$2"
+
+pgrep "^${name}\$" | xargs -n 1 chdir-proc "$dir"

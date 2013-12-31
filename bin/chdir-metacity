@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+## chdir-metacity: change metacity directory to $HOME
+##
+## metacity chdir()s to g_get_home_dir()
+##
+## necessary until Glib 2.36, when g_get_home_dir() uses $HOME instead of
+## looking in passwd
+##
+## https://developer.gnome.org/glib/2.38/glib-Miscellaneous-Utility-Functions.html#g-get-home-dir
+
+## $Revision$
+## Copyright 2013 Michael M. Hoffman <mmh1@uw.edu>
+
+set -o nounset -o pipefail -o errexit
+
+if [[ $# != 0 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+chdir-proc-all metacity "$HOME"
