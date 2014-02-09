@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EMACSBIN="${CYGPROGRAMFILES}/GNU Emacs/bin/emacsclient"
+EMACSBIN="${CYGSYSTEMDRIVE}/Program Files (x86)/GNU Emacs/emacs-24.3/bin/emacsclient"
 
 if [ $# -gt 0 ]; then
     cygpath -w -- "$@" | xargs -d '\n' "${EMACSBIN}" -a emacs -n

@@ -1,6 +1,11 @@
 #!/bin/bash
 
-EMACSBIN="${CYGPROGRAMFILES}/GNU Emacs/bin/emacs"
+EMACSBIN="${CYGSYSTEMDRIVE}/Program Files (x86)/GNU Emacs/emacs-24.3/bin/emacs"
+
+# XXX: cygpath -w -- "foo bar \"baz\"" returns just foo bar
+# this causes problems with --eval arguments
+# need to either report/fix bug in cygpath
+# or start treating argument following eval here separately
 
 if [ $# -gt 0 ]; then
     cygpath -w -- "$@" | xargs -d '\n' "${EMACSBIN}"
