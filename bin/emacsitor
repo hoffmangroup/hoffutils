@@ -2,7 +2,7 @@
 
 # emacsitor:  do not start in background!
 # $Revision$
-# Copyright 2004,2010,2011 Michael M. Hoffman <mmh1@uw.edu>
+# Copyright 2004,2010,2011,2014 Michael M. Hoffman <mmh1@uw.edu>
 
 # usage: emacsitor [OPTION-OR-FILENAME]...
 
@@ -24,7 +24,7 @@ _emacs-x()
 
 if [[ "${INSIDE_EMACS:-}" || "$TERM" == "eterm-color" ]]; then
     command emacsclient "$@"
-elif [[ "${DISPLAY:$((${#DISPLAY}-2))}" == ":0" || "${DISPLAY:$((${#DISPLAY}-4))}" == ":0.0" ]]; then
+elif [[ "$ARCH" == CYGWIN_NT* || "$DISPLAY" == :0* ]]; then
     _emacs-x "$@"
 else
     _emacs-nox "$@"
