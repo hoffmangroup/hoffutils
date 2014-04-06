@@ -3,7 +3,7 @@
 ## release: release new version of Python software, change version number
 
 ## $Revision$
-## Copyright 2010-2013 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2010-2014 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -16,6 +16,7 @@ prep-release
 
 . repo-info
 
+XXX we need to make changes here for a mercurial version. hg bookmark?
 tag_url="$repo/tags/release-$version"
 
 if svn ls "$tag_url" 2>/dev/null; then

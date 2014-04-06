@@ -19,7 +19,7 @@ END
 my $html = "";
 {
     local $/ = undef ;
-    $html = <STDIN>;
+    $html = <>;
 }
 if($html !~ s/(<\/head>)/$footer$1/si)
 {
