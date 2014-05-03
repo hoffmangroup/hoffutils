@@ -16,7 +16,7 @@ prep-release
 
 . repo-info
 
-XXX we need to make changes here for a mercurial version. hg bookmark?
+XXX we need to make changes here for a mercurial version. hg tag
 tag_url="$repo/tags/release-$version"
 
 if svn ls "$tag_url" 2>/dev/null; then
