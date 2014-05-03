@@ -18,13 +18,13 @@ dest="${parent}/www-external"
 
 ## commit
 cd "$src"
-hg commit
+hg commit || true
 
 ## test links
 linkchecker --check-css --check-html http://mordor/hoffmanlab/
 
 ## push
-hg push
+hg push || true
 
 ## copy files
 ssh mordor rsync --exclude .hg --archive --delete --inplace "${src}/" "$dest"
@@ -32,3 +32,6 @@ ssh mordor rsync --exclude .hg --archive --delete --inplace "${src}/" "$dest"
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
     -execdir perl -i "$(type -p insert_google_analytics_footer.pl)" {} \;
+
+## successful
+echo "Copy successful. Email Qun to push $dest to external web server."
