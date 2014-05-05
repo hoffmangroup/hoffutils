@@ -13,7 +13,7 @@ Calendar imports these times in your current local Google Calendar time
 
 __version__ = "$Revision$"
 
-## Copyright 2013 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2013, 2014 Michael M. Hoffman <mmh1@uw.edu>
 
 from csv import DictReader
 from datetime import date, datetime
@@ -24,9 +24,11 @@ from pytz import timezone, utc
 
 YEAR_DEFAULT = 1900
 
+
 def print_field(key, value):
     if value:
         print(key, value, sep=":")
+
 
 def print_alarm(trigger):
     print("""BEGIN:VALARM
@@ -35,16 +37,18 @@ DESCRIPTION:This is an event reminder
 TRIGGER:%s
 END:VALARM""" % trigger)
 
+
 def transform_fieldname(name):
     res = name.lower()
     res = res.replace(" ", "_")
     return res
 
+
 def get_date(row, last_date):
     row_date = row["date"]
 
     if not row_date:
-        return last_date # continue with date from previous row
+        return last_date  # continue with date from previous row
 
     try:
         dt = datetime.strptime(row_date, "%d-%b")
@@ -58,6 +62,7 @@ def get_date(row, last_date):
         res = res.replace(year=today_year)
 
     return res
+
 
 def get_time(row, fieldname):
     text = row[fieldname]
@@ -81,6 +86,7 @@ def get_time(row, fieldname):
 
     return dt.time()
 
+
 def get_dt(date, time, tz):
     dt = datetime.combine(date, time)
     fmt = "%Y%m%dT%H%M%S"
@@ -91,10 +97,12 @@ def get_dt(date, time, tz):
 
     return dt.strftime(fmt)
 
+
 def get_dtstart(row, date, tz):
     row_time = get_time(row, "time")
 
     return get_dt(date, row_time, tz)
+
 
 def get_dtend(row, next_row, date, tz):
     if row["end_time"]:
@@ -104,8 +112,10 @@ def get_dtend(row, next_row, date, tz):
 
     return get_dt(date, row_time, tz)
 
+
 def make_uid(*texts):
     return sha256("\0".join(texts)).hexdigest()
+
 
 def write_events(rows, tz):
     if tz:
@@ -141,6 +151,11 @@ def write_events(rows, tz):
         print_alarm("-P0DT0H10M0S")
         print_field("END", "VEVENT")
 
+
+def row_nonblank(row):
+    return bool("".join(row.values()))
+
+
 def csv2ics(filename, tz=None):
     print_field("BEGIN", "VCALENDAR")
 
@@ -148,10 +163,12 @@ def csv2ics(filename, tz=None):
         reader = DictReader(infile)
         reader.fieldnames = [transform_fieldname(name)
                              for name in reader.fieldnames]
-        rows = [row for row in reader]
+        rows = [row for row in reader
+                if row_nonblank(row)]
         write_events(rows, tz)
 
     print_field("END", "VCALENDAR")
+
 
 def parse_options(args):
     from optparse import OptionParser
@@ -168,6 +185,7 @@ def parse_options(args):
         parser.error("incorrect number of arguments")
 
     return options, args
+
 
 def main(args=sys.argv[1:]):
     options, args = parse_options(args)
