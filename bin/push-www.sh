@@ -27,7 +27,8 @@ linkchecker --check-css --check-html http://mordor/hoffmanlab/
 hg push || true
 
 ## copy files
-ssh mordor rsync --exclude .hg --archive --delete --inplace "${src}/" "$dest"
+ssh mordor rsync --exclude .hg --exclude internal --archive --delete \
+    --inplace "${src}/" "$dest"
 
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
