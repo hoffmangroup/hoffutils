@@ -3,7 +3,7 @@
 ## makegmtk2.sh: make new GMTK
 
 ## $Revision$
-## Copyright 2011, 2012, 2013 Michael M. Hoffman <mmh1@uw.edu>
+## Copyright 2011, 2012, 2013, 2014 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
@@ -15,6 +15,7 @@ fi
 
 dir="${1:-$HOME/src/collab/gmtk}" # . for current dir
 
+## user variables
 NEW="${NEW:-}"
 MODULE="${MODULE:-}"
 NOCHECK="${NOCHECK:-}"

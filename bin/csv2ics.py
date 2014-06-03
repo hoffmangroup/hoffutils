@@ -15,7 +15,7 @@ __version__ = "$Revision$"
 
 ## Copyright 2013, 2014 Michael M. Hoffman <mmh1@uw.edu>
 
-from csv import DictReader
+from csv import DictReader, Sniffer
 from datetime import date, datetime
 from hashlib import sha256
 import sys
@@ -159,8 +159,10 @@ def row_nonblank(row):
 def csv2ics(filename, tz=None):
     print_field("BEGIN", "VCALENDAR")
 
-    with open(filename) as infile:
-        reader = DictReader(infile)
+    with open(filename, "rb") as infile:
+        dialect = Sniffer().sniff(infile.read())
+        infile.seek(0)
+        reader = DictReader(infile, dialect=dialect)
         reader.fieldnames = [transform_fieldname(name)
                              for name in reader.fieldnames]
         rows = [row for row in reader
