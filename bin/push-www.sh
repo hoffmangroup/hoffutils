@@ -2,15 +2,37 @@
 
 ## push-www.sh: push Hoffman Lab www to www-external
 
-## $Revision$
 ## Copyright 2014 Michael M. Hoffman <mmh1@uw.edu>
 
 set -o nounset -o pipefail -o errexit
 
-if [[ $# != 0 || "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-    echo usage: "$0"
+usage () {
+    echo "usage: $0 [-l] [--without-linkchecker]"
     exit 2
-fi
+}
+
+check_links=1
+optspec="hl-:"
+
+while getopts "$optspec" optchar; do
+    case "$optchar" in
+        -)
+            case "$OPTARG" in
+                without-linkchecker)
+                    check_links=
+                    ;;
+                *)
+                    usage
+            esac
+            ;;
+        l)
+            check_links=
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
 parent=/mnt/work1/users/hoffmangroup
 src="${parent}/www"
@@ -21,7 +43,9 @@ cd "$src"
 hg commit || true
 
 ## test links
-linkchecker --check-css --check-html http://mordor/hoffmanlab/
+if [ "$check_links" ]; then
+    linkchecker --check-css --check-html http://mordor/hoffmanlab/
+fi
 
 ## push
 hg push || true
