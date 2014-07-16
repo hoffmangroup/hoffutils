@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+## build-distribution:
+## Builds the python project source distribution, eggs, and
+## documentation
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+# Accept no additional arguments
+if [ $# != 0 ]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+# Retrieve the current python project name and version
+. python-project-info
+
+echo "Building distribution for $python_project_name-$python_project_version"
+
+# Build docs and display them
+# Assumes the "sphinx" python package is installed
+echo "Building documentation"
+build-python-documentation
+
+# "release" is a presumed alias defined in setup.cfg
+# Specifically it runs the following:
+# python setup.py egg_info --no-svn-revision --tag-build '' sdist bdist_egg
+echo "Building source and egg distributions"
+python setup.py release
+
+echo "Distribution and documentation built"

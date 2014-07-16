@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+## ship-distribution:
+## Registers and uploads the eggs and tarball release. Pushes the current changes
+## to Bitbucket. Uploads current built documentation in HTML and PDF format to
+## their respective locations. Notifies user to edit the project webpage
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+. python-project-info
+. python-project-www-info
+
+tag-version
+
+# Register and upload software
+echo "Registering and uploading to PyPI"
+# Note that the "release" alias is required for the "dist" to be detectected
+python setup.py release register upload
+
+# Push tagged version to Bitbucket
+echo "Pushing tags to repository"
+hg push
+
+# Upload documentation to web
+ship-python-documentation
+
+python_project_src_dir="${python_project_www_dir}"
+python_project_full_name="${python_project_name}-${python_project_version}"
+
+# Copy software to webserver
+scp -v "dist/${python_project_full_name}.tar.gz" \
+    "dist/${python_project_full_name}-py$python_version"*.egg \
+    "${python_project_www_hostname}:${python_project_src_dir}"
+
+update-version
+
+echo "Pushing version update to repository"
+hg push
+
+# Notify that the webpage should be updated with version numbers
+echo "Don't forget to update the project website:"
+echo "${python_project_www_hostname}:${python_project_src_dir}"

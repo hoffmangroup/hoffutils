@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+## python-project-info:
+## Retrieves the python project name and version, and python version
+## into $python_project_name, $python_project_version and $python_version
+## respectively
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+python_version="$(python -V 2>&1 | sed 's/Python \([0-9]\.[0-9]\).*/\1/')"
+python_project_name="$(python setup.py --name)"
+python_project_version="$(python setup.py --version)"

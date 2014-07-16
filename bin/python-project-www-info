@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+## python-project-www-info:
+## Retrieves the python project public web directory and places it in
+## $python_project_www_dir
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+. python-project-info
+
+python_project_www_hostname="mordor"
+python_project_www_dir="/mnt/work1/users/hoffmangroup/www/proj/${python_project_name}"

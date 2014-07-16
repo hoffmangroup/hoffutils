@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+## ship-python-documentation:
+## Copies the python documentation to the project website. Called
+## automatically in ship-distribution and can also be used separately for
+## small updates to documentation.
+
+## $Revision$
+## Copyright 2011, 2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+. python-project-www-info
+
+python_project_doc_dir="${python_project_www_dir}/doc/${python_project_version}"
+full_doc_path="${python_project_www_hostname}:${python_project_doc_dir}"
+
+# If your usernames don't match between hosts, consider adding a host alias in
+# your ~/.ssh/config 
+# e.g. http://serverfault.com/questions/330310/force-ssh-to-prompt-for-user
+
+# Make the documentation directory
+ssh -q ${python_project_www_hostname} mkdir -p ${python_project_doc_dir}
+
+# Copy the documentation over to the new directory
+echo "Copying documentation to ${full_doc_path}"
+scp -rv doc/_build/html/* "${full_doc_path}" || echo >&2 "no HTML docs"
+scp -v doc/_build/latex/*.pdf "${full_doc_path}" || echo >&2 "no LaTeX docs"

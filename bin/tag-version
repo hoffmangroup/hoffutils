@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+## tag-version:
+## Tags the current commit to the version to be released.
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+if [ $# != 0 ]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+. python-project-info
+
+echo "Tagging current revision with release-${python_project_version}"
+# Forces the tag on the current revision in case of previous mishaps/tags
+hg tag -f release-${python_project_version}

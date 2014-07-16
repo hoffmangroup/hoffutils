@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+## build-python-documentation:
+## Builds the python documentation. Automatically called by
+## build-distribution. Can be called separately for usage with
+## ship-python-documentation.
+
+## $Revision$
+## Copyright 2011, 2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+if [ -d doc ]; then
+    pushd doc && (make SPHINXOPTS=-W linkcheck html latexpdf man \
+        && evince _build/latex/*.pdf)
+    popd
+else
+    echo "No documentation directory ('doc') found"
+fi

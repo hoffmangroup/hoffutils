@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+## update-version:
+## Reads the new version number and updates version numbers in necessary files.
+## Locally commits changes/tag. Does not push and notifies user as such.
+
+## $Revision$
+## Copyright 2010-2014 Michael M. Hoffman <mhoffman@uhnresearch.ca>
+
+set -o nounset -o pipefail -o errexit
+
+if [ $# != 0 ]; then
+    echo usage: "$0"
+    exit 2
+fi
+
+. python-project-info
+
+echo "The version shipped is ${python_project_version}"
+echo "What is the new version?"
+
+read next_version
+
+echo "Updating versions in setup.py and NEWS"
+perl -i~ -pe "s/__version__ = \".*\"/__version__ = \"$next_version\"/" \
+    setup.py
+
+mv NEWS NEWS~ 2>&1 || touch NEWS~
+echo -e "$next_version:\n\n\n" | cat - NEWS~ > NEWS
+
+echo "Commiting version change locally"
+hg commit -m "Increment release to $next_version"
