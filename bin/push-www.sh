@@ -52,7 +52,7 @@ hg push || true
 
 ## copy files
 ssh mordor rsync --exclude .hg --exclude internal --archive --delete \
-    --inplace "${src}/" "$dest"
+    "${src}/" "$dest"
 
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
