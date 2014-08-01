@@ -31,8 +31,7 @@ python_project_src_dir="${python_project_www_dir}"
 python_project_full_name="${python_project_name}-${python_project_version}"
 
 # Copy software to webserver
-scp -v "dist/${python_project_full_name}.tar.gz" \
-    "dist/${python_project_full_name}-py$python_version"*.egg \
+scp -v dist/${python_project_full_name}* \
     "${python_project_www_hostname}:${python_project_src_dir}"
 
 update-version
