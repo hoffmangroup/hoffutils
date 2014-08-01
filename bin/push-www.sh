@@ -54,6 +54,10 @@ hg push || true
 ssh mordor rsync --exclude .hg --exclude internal --archive --delete \
     "${src}/" "$dest"
 
+## restore permissions
+chgrp -Rv hoffmangroup ${parent}
+chmod -Rv g+wX ${parent}
+
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
     -execdir perl -i "$(type -p insert_google_analytics_footer.pl)" {} \;
