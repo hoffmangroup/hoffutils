@@ -51,7 +51,7 @@ fi
 hg push || true
 
 ## copy files
-ssh mordor rsync --exclude .hg --exclude internal --archive --delete \
+ssh mordor rsync --omit-dir-times --exclude .hg --exclude internal --archive --delete \
     "${src}/" "$dest"
 
 ## restore permissions
