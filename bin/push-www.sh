@@ -51,8 +51,12 @@ fi
 hg push || true
 
 ## copy files
-ssh mordor rsync --exclude .hg --exclude internal --archive --delete \
+ssh mordor rsync --omit-dir-times --exclude .hg --exclude internal --archive --delete \
     "${src}/" "$dest"
+
+## restore permissions
+chgrp -Rv hoffmangroup ${parent}
+chmod -Rv g+wX ${parent}
 
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
