@@ -44,7 +44,7 @@ hg commit || true
 
 ## test links
 if [ "$check_links" ]; then
-    linkchecker --check-css --check-html http://mordor/hoffmanlab/
+    linkchecker http://mordor/hoffmanlab/
 fi
 
 ## push
