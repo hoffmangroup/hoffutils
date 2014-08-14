@@ -55,8 +55,8 @@ ssh mordor rsync --omit-dir-times --exclude .hg --exclude internal --archive --d
     "${src}/" "$dest"
 
 ## restore permissions
-chgrp -Rv hoffmangroup ${parent}
-chmod -Rv g+wX ${parent}
+chgrp -Rv hoffmangroup ${parent} || true
+chmod -Rv g+wX ${parent} || true
 
 ## replace HTML files in-place
 find "$dest" -name '*.html' \
