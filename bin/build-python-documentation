@@ -11,7 +11,8 @@
 set -o nounset -o pipefail -o errexit
 
 if [ -d doc ]; then
-    pushd doc && (make SPHINXOPTS=-W linkcheck html latexpdf man \
+    pushd doc && (http_proxy="http://journals.uhnresearch.ca:3128" \
+        make SPHINXOPTS=-W linkcheck html latexpdf man \
         && evince _build/latex/*.pdf)
     popd
 else
