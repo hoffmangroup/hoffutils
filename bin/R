@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-set -o nounset -o errexit -o pipefail
-
-bin_filename="$(which --all R | fgrep -v "$0" | head -n 1)"
-
-exec "${bin_filename}" $(echo "$@" | sed -re 's/ ?--no-readline//g')
